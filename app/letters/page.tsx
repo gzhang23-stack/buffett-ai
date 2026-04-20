@@ -13,7 +13,7 @@ interface SearchHit {
 
 // 所有年份分组（有文件的年份由API返回，这里定义两个分组范围）
 const PARTNERSHIP_RANGE = { label: '合伙公司致合伙人信', start: 1956, end: 1969 } // 合伙人信：1956-1969
-const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1970, end: 2025 } // 伯克希尔：1970-2024
+const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1965, end: 2025 } // 伯克希尔：1965-2024
 
 function LettersInner() {
   const router = useRouter()
@@ -22,6 +22,7 @@ function LettersInner() {
 
   const [availableYears, setAvailableYears] = useState<Set<number>>(new Set())
   const [selectedYear, setSelectedYear] = useState<number | null>(null)
+  const [selectedGroup, setSelectedGroup] = useState<'partnership' | 'berkshire'>('berkshire')
   const [fullText, setFullText] = useState('')
   const [textError, setTextError] = useState('')
   const [loadingText, setLoadingText] = useState(false)
@@ -66,9 +67,10 @@ function LettersInner() {
     }
   }
 
-  const loadYear = async (year: number) => {
+  const loadYear = async (year: number, group: 'partnership' | 'berkshire') => {
     if (!availableYears.has(year)) return
     setSelectedYear(year)
+    setSelectedGroup(group)
     setSearchResults([])
     setSearchQuery('')
     setFullText('')
@@ -92,7 +94,7 @@ function LettersInner() {
   }
 
   // 生成某个范围内的年份按钮列表
-  const renderYearGroup = (label: string, start: number, end: number) => {
+  const renderYearGroup = (label: string, start: number, end: number, group: 'partnership' | 'berkshire') => {
     const years: number[] = []
     for (let y = start; y <= end; y++) years.push(y)
     const hasAny = years.some((y) => availableYears.has(y))
@@ -108,10 +110,10 @@ function LettersInner() {
           return (
             <button
               key={year}
-              onClick={() => available && loadYear(year)}
+              onClick={() => available && loadYear(year, group)}
               disabled={!available}
               className={`w-full text-left flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${
-                selectedYear === year
+                selectedYear === year && selectedGroup === group
                   ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
                   : available
                   ? 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
@@ -119,7 +121,7 @@ function LettersInner() {
               }`}
             >
               <span>{year}</span>
-              {selectedYear === year && <ChevronRight className="h-3 w-3 shrink-0" />}
+              {selectedYear === year && selectedGroup === group && <ChevronRight className="h-3 w-3 shrink-0" />}
               {!available && <span className="text-[9px] text-stone-700">—</span>}
             </button>
           )
@@ -129,7 +131,7 @@ function LettersInner() {
   }
 
   const currentTitle = selectedYear
-    ? (selectedYear <= 1969
+    ? (selectedGroup === 'partnership'
         ? `${selectedYear} 年巴菲特合伙公司致合伙人信`
         : `${selectedYear} 年致伯克希尔·哈撒韦股东信`)
     : ''
@@ -151,8 +153,8 @@ function LettersInner() {
             </div>
           ) : (
             <>
-              {renderYearGroup(PARTNERSHIP_RANGE.label, PARTNERSHIP_RANGE.start, PARTNERSHIP_RANGE.end)}
-              {renderYearGroup(BERKSHIRE_RANGE.label, BERKSHIRE_RANGE.start, BERKSHIRE_RANGE.end)}
+              {renderYearGroup(PARTNERSHIP_RANGE.label, PARTNERSHIP_RANGE.start, PARTNERSHIP_RANGE.end, 'partnership')}
+              {renderYearGroup(BERKSHIRE_RANGE.label, BERKSHIRE_RANGE.start, BERKSHIRE_RANGE.end, 'berkshire')}
             </>
           )}
         </div>
