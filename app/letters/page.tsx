@@ -12,8 +12,8 @@ interface SearchHit {
 }
 
 // 所有年份分组（有文件的年份由API返回，这里定义两个分组范围）
-const PARTNERSHIP_RANGE = { label: '合伙公司致合伙人信', start: 1956, end: 1970 }
-const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1965, end: 2025 }
+const PARTNERSHIP_RANGE = { label: '合伙公司致合伙人信', start: 1956, end: 1970 } // 合伙人信：1956-1970
+const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1965, end: 2025 } // 伯克希尔：1965-2024
 
 function LettersInner() {
   const router = useRouter()
