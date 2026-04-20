@@ -18,6 +18,103 @@ interface LetterMeta {
   type: 'partnership' | 'berkshire'
 }
 
+// ── Table rendering ──────────────────────────────────────────────────────────
+
+function LetterTable({ raw }: { raw: string }) {
+  const rows = raw.trim().split('\n').map((line) => line.split('|'))
+  if (rows.length === 0) return null
+  const [header, ...body] = rows
+  return (
+    <div className="overflow-x-auto my-4 rounded-lg border border-stone-700">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-stone-800 border-b border-stone-600">
+            {header.map((cell, i) => (
+              <th
+                key={i}
+                className="px-4 py-2.5 text-left font-semibold text-amber-300 whitespace-nowrap"
+              >
+                {cell.trim()}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((row, ri) => (
+            <tr
+              key={ri}
+              className={`border-b border-stone-800 ${
+                ri % 2 === 0 ? 'bg-stone-900/40' : 'bg-stone-900/10'
+              } hover:bg-stone-800/60 transition-colors`}
+            >
+              {row.map((cell, ci) => (
+                <td key={ci} className="px-4 py-2 text-stone-300 whitespace-nowrap">
+                  {cell.trim()}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+/** 把含 <<<TABLE>>> 标记的纯文本渲染为段落 + 样式化表格的 React 节点数组 */
+function renderLetterContent(text: string): React.ReactNode[] {
+  const TABLE_START = '<<<TABLE>>>'
+  const TABLE_END = '<<<ENDTABLE>>>'
+  const segments: React.ReactNode[] = []
+  let remaining = text
+  let key = 0
+
+  while (remaining.length > 0) {
+    const startIdx = remaining.indexOf(TABLE_START)
+    if (startIdx === -1) {
+      // No more tables — render remaining text
+      if (remaining.trim()) {
+        segments.push(
+          <span key={key++} className="whitespace-pre-wrap">
+            {remaining}
+          </span>
+        )
+      }
+      break
+    }
+
+    // Text before table
+    if (startIdx > 0) {
+      const before = remaining.slice(0, startIdx)
+      if (before.trim()) {
+        segments.push(
+          <span key={key++} className="whitespace-pre-wrap">
+            {before}
+          </span>
+        )
+      }
+    }
+
+    // Extract table block
+    const endIdx = remaining.indexOf(TABLE_END, startIdx)
+    if (endIdx === -1) {
+      // Malformed — treat rest as text
+      segments.push(
+        <span key={key++} className="whitespace-pre-wrap">
+          {remaining.slice(startIdx)}
+        </span>
+      )
+      break
+    }
+
+    const tableRaw = remaining.slice(startIdx + TABLE_START.length, endIdx)
+    segments.push(<LetterTable key={key++} raw={tableRaw} />)
+
+    remaining = remaining.slice(endIdx + TABLE_END.length)
+  }
+
+  return segments
+}
+
 function LettersInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -273,8 +370,8 @@ function LettersInner() {
                   中文版 · Warren E. Buffett · {fullText.length.toLocaleString()} 字符
                 </p>
               </div>
-              <div className="text-sm text-stone-300 leading-relaxed whitespace-pre-wrap break-words">
-                {fullText}
+              <div className="text-sm text-stone-300 leading-relaxed break-words">
+                {renderLetterContent(fullText)}
               </div>
             </div>
           )}

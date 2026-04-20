@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 从 learnbuffett.com 抓取巴菲特致合伙人信，写入 data/zh/ 目录。
-保留表格内容，转换为 ASCII 文本表格。
+保留表格内容，转换为标记格式供前端渲染。
 覆盖由 split_letters.py 生成的旧文件（旧文件无表格）。
 """
 import os, re, time, urllib.parse, argparse
@@ -20,8 +20,6 @@ HEADERS = {
 }
 
 # 每个 slug 对应的 learnbuffett.com 路径（不含 BASE）
-# 格式：slug → /partnership/{文件名}.html
-# 通过实际 URL 结构推断：slug 即为文件名主体，后缀为 -巴菲特致合伙人信
 SLUG_URL_MAP = {
     # 单封年度信（1956-1960）
     "1956":       "/partnership/1956-巴菲特致合伙人信.html",
@@ -80,37 +78,24 @@ def fetch(url: str) -> str:
 
 
 def table_to_text(table_html: str) -> str:
-    """把 <table> HTML 转为对齐的纯文本表格。"""
+    """把 <table> HTML 转为管道符分隔的标记格式，供前端渲染为 HTML 表格。"""
     rows = re.findall(r'<tr[^>]*>(.*?)</tr>', table_html, re.DOTALL)
     parsed = []
     for row in rows:
         cells = re.findall(r'<t[hd][^>]*>(.*?)</t[hd]>', row, re.DOTALL)
         cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
         cells = [c.replace('&amp;', '&').replace('&nbsp;', ' ')
-                  .replace('&lt;', '<').replace('&gt;', '>') for c in cells]
+                  .replace('&lt;', '<').replace('&gt;', '>')
+                  .replace('|', '｜') for c in cells]
         if any(c for c in cells):
             parsed.append(cells)
     if not parsed:
         return ''
 
-    col_count = max(len(r) for r in parsed)
-    widths = [0] * col_count
+    lines = ['<<<TABLE>>>']
     for row in parsed:
-        for i, cell in enumerate(row):
-            if i < col_count:
-                widths[i] = max(widths[i], len(cell))
-
-    sep = '┼'.join('─' * (w + 2) for w in widths)
-    lines = ['┌' + '┬'.join('─' * (w + 2) for w in widths) + '┐']
-    for ri, row in enumerate(parsed):
-        cells_padded = []
-        for i in range(col_count):
-            cell = row[i] if i < len(row) else ''
-            cells_padded.append(f' {cell:<{widths[i]}} ')
-        lines.append('│' + '│'.join(cells_padded) + '│')
-        if ri == 0:
-            lines.append('├' + sep + '┤')
-    lines.append('└' + '┴'.join('─' * (w + 2) for w in widths) + '┘')
+        lines.append('|'.join(row))
+    lines.append('<<<ENDTABLE>>>')
     return '\n'.join(lines)
 
 
@@ -143,11 +128,11 @@ def extract_text(html: str) -> str:
     content = (content
                .replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
                .replace('&quot;', '"').replace('&#39;', "'").replace('&nbsp;', ' ')
-               .replace('&ldquo;', '"').replace('&rdquo;', '"')
+               .replace('&ldquo;', '\u201c').replace('&rdquo;', '\u201d')
                .replace('&lsquo;', '\u2018').replace('&rsquo;', '\u2019')
-               .replace('&mdash;', '—').replace('&ndash;', '–'))
+               .replace('&mdash;', '\u2014').replace('&ndash;', '\u2013'))
 
-    # 规范化空白
+    # 规范化空白（保留表格标记行不被压缩）
     content = re.sub(r'\r\n|\r', '\n', content)
     content = re.sub(r'[ \t]{2,}', ' ', content)
     content = re.sub(r'\n{4,}', '\n\n\n', content)

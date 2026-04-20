@@ -27,37 +27,24 @@ def fetch(url: str) -> str:
 
 
 def table_to_text(table_html: str) -> str:
-    """把 <table> HTML 转为对齐的纯文本表格。"""
+    """把 <table> HTML 转为管道符分隔的标记格式，供前端渲染为 HTML 表格。"""
     rows = re.findall(r'<tr[^>]*>(.*?)</tr>', table_html, re.DOTALL)
     parsed = []
     for row in rows:
         cells = re.findall(r'<t[hd][^>]*>(.*?)</t[hd]>', row, re.DOTALL)
         cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
         cells = [c.replace('&amp;', '&').replace('&nbsp;', ' ')
-                  .replace('&lt;', '<').replace('&gt;', '>') for c in cells]
+                  .replace('&lt;', '<').replace('&gt;', '>')
+                  .replace('|', '｜') for c in cells]  # 转义管道符
         if any(c for c in cells):
             parsed.append(cells)
     if not parsed:
         return ''
 
-    col_count = max(len(r) for r in parsed)
-    widths = [0] * col_count
+    lines = ['<<<TABLE>>>']
     for row in parsed:
-        for i, cell in enumerate(row):
-            if i < col_count:
-                widths[i] = max(widths[i], len(cell))
-
-    sep = '┼'.join('─' * (w + 2) for w in widths)
-    lines = ['┌' + '┬'.join('─' * (w + 2) for w in widths) + '┐']
-    for ri, row in enumerate(parsed):
-        cells_padded = []
-        for i in range(col_count):
-            cell = row[i] if i < len(row) else ''
-            cells_padded.append(f' {cell:<{widths[i]}} ')
-        lines.append('│' + '│'.join(cells_padded) + '│')
-        if ri == 0:
-            lines.append('├' + sep + '┤')
-    lines.append('└' + '┴'.join('─' * (w + 2) for w in widths) + '┘')
+        lines.append('|'.join(row))
+    lines.append('<<<ENDTABLE>>>')
     return '\n'.join(lines)
 
 
