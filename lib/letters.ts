@@ -340,3 +340,71 @@ export function buildContext(results: SearchResult[]): string {
     .map((r, i) => `[来源 ${i + 1}：${r.letter.year} 年致股东信]\n${r.letter.content}`)
     .join('\n\n---\n\n')
 }
+
+// ─── Sub-letter (slug) API ────────────────────────────────────────────────────
+
+export interface LetterMeta {
+  slug: string       // 文件名去掉 .txt，如 "1961年中" / "1965-berkshire" / "1977"
+  year: number
+  label: string      // 侧边栏显示名，如 "年中" / "11月" / "致股东信" / "年度信"
+  type: 'partnership' | 'berkshire'
+}
+
+/** 从文件名提取元数据，仅处理 data/zh/ 目录下的 txt 文件 */
+function metaFromFilename(filename: string): LetterMeta | null {
+  const base = filename.replace(/\.txt$/, '')
+
+  // 子信件：1961年中 / 1962年11月 / 1969年12月26日
+  const subMatch = base.match(/^(\d{4})(年.+)$/)
+  if (subMatch) {
+    const year = parseInt(subMatch[1], 10)
+    const suffix = subMatch[2]                 // "年中" / "年11月" / "年12月26日"
+    return { slug: base, year, label: suffix, type: 'partnership' }
+  }
+
+  // 伯克希尔子信件：1965-berkshire
+  const bkMatch = base.match(/^(\d{4})-berkshire$/)
+  if (bkMatch) {
+    const year = parseInt(bkMatch[1], 10)
+    return { slug: base, year, label: '致股东信', type: 'berkshire' }
+  }
+
+  // 纯年份：1977 / 1960
+  const yearMatch = base.match(/^(\d{4})$/)
+  if (yearMatch) {
+    const year = parseInt(yearMatch[1], 10)
+    const type: 'partnership' | 'berkshire' = year <= 1969 ? 'partnership' : 'berkshire'
+    return { slug: base, year, label: '年度信', type }
+  }
+
+  return null
+}
+
+/** 返回所有可读信件的元数据列表，按年份 + slug 排序 */
+export function getAllLetterMetas(): LetterMeta[] {
+  const dataDir = findDataDir()
+  if (!dataDir) return []
+
+  const files = fs.readdirSync(dataDir).filter((f) => f.endsWith('.txt'))
+  const metas: LetterMeta[] = []
+
+  for (const file of files) {
+    const meta = metaFromFilename(file)
+    if (!meta) continue
+    const text = readAndCleanFile(path.join(dataDir, file))
+    if (text) metas.push(meta)
+  }
+
+  return metas.sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year
+    return a.slug.localeCompare(b.slug)
+  })
+}
+
+/** 按 slug 读取信件全文 */
+export function getLetterBySlug(slug: string): string {
+  const dataDir = findDataDir()
+  if (!dataDir) return ''
+  const filePath = path.join(dataDir, `${slug}.txt`)
+  return readAndCleanFile(filePath) ?? ''
+}

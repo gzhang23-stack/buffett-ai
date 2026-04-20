@@ -1,11 +1,28 @@
 import { NextRequest } from 'next/server'
-import { getAllLetters, searchLetters, getLetterYears, getLetterByYear } from '@/lib/letters'
+import { getAllLetters, searchLetters, getLetterYears, getLetterByYear, getAllLetterMetas, getLetterBySlug } from '@/lib/letters'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const q = searchParams.get('q')
   const year = searchParams.get('year')
   const yearsOnly = searchParams.get('years')
+  const metasOnly = searchParams.get('metas')
+  const slug = searchParams.get('slug')
+
+  // Return all letter metadata (slug, year, label, type)
+  if (metasOnly) {
+    const metas = getAllLetterMetas()
+    return Response.json({ metas })
+  }
+
+  // Return full text for a specific slug
+  if (slug) {
+    const text = getLetterBySlug(slug)
+    if (!text) {
+      return Response.json({ slug, text: '', error: `找不到信件：${slug}` })
+    }
+    return Response.json({ slug, text })
+  }
 
   // Return year list (only years with readable data)
   if (yearsOnly) {
