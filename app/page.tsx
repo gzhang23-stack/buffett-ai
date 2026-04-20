@@ -1,452 +1,272 @@
-'use client'
+import Link from 'next/link'
+import {
+  BookOpen,
+  MessageSquare,
+  FileText,
+  Lightbulb,
+  Building2,
+  Users,
+  ArrowRight,
+  TrendingUp,
+  Calendar,
+} from 'lucide-react'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Send, BookOpen, Loader2, RotateCcw, ChevronDown, ChevronUp, Plus } from 'lucide-react'
+// ─── Static Data ──────────────────────────────────────────────────────────────
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Source {
-  year: number
-  title: string
-  excerpt: string
-}
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  sources?: Source[]
-  loading?: boolean
-}
-
-interface Conversation {
-  id: string
-  title: string
-  messages: Message[]
-  createdAt: number
-}
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const EXAMPLE_QUESTIONS = [
-  '巴菲特如何看待长期投资？',
-  '巴菲特如何评估一家好公司？',
-  '巴菲特对市场波动有什么看法？',
-  '巴菲特如何看待管理层的质量？',
-  '巴菲特如何描述伯克希尔的竞争优势？',
-  '巴菲特在信中如何谈论保险业务的作用？',
+const CONCEPTS = [
+  '内在价值', '护城河', '复利', '安全边际', '长期持有', '能力圈',
+  '先生市场', '价值投资', '浮存金', '品牌溢价', '管理层诚信', '股东权益',
+  '资本配置', '留存收益', '集中投资', '耐心等待', '反向思维', '企业文化',
+  '定价权', '经济特许权',
 ]
 
-function uid() {
-  return Math.random().toString(36).slice(2)
-}
+const COMPANIES = [
+  { name: '可口可乐', desc: '消费品护城河典范', since: '1988' },
+  { name: '美国运通', desc: '品牌与网络效应', since: '1964' },
+  { name: '苹果公司', desc: '最大持仓，消费生态', since: '2016' },
+  { name: 'GEICO 保险', desc: '保险浮存金核心', since: '1996' },
+  { name: "See's Candies", desc: '定价权教科书案例', since: '1972' },
+  { name: '伯灵顿北方铁路', desc: '基础设施护城河', since: '2010' },
+]
 
-function newConversation(): Conversation {
-  return { id: uid(), title: '新对话', messages: [], createdAt: Date.now() }
-}
+const PEOPLE = [
+  {
+    name: '沃伦·巴菲特',
+    title: '伯克希尔·哈撒韦 CEO',
+    desc: '"奥马哈先知"，价值投资集大成者，管理伯克希尔逾半世纪。',
+    years: '1965–至今',
+  },
+  {
+    name: '查理·芒格',
+    title: '伯克希尔·哈撒韦 副董事长',
+    desc: '多元思维框架的倡导者，推动巴菲特从"雪茄烟蒂"进化为买好公司。',
+    years: '1978–2023',
+  },
+  {
+    name: '格雷格·阿贝尔',
+    title: '伯克希尔·哈撒韦 接班人',
+    desc: '负责管理伯克希尔非保险业务，被巴菲特钦点为继承人。',
+    years: '2018–至今',
+  },
+  {
+    name: '本杰明·格雷厄姆',
+    title: '价值投资之父',
+    desc: '《证券分析》与《聪明的投资者》作者，巴菲特的导师与精神源泉。',
+    years: '1894–1976',
+  },
+]
 
-// ─── Source Card ─────────────────────────────────────────────────────────────
+const FEATURE_CARDS = [
+  {
+    href: '/letters',
+    icon: FileText,
+    title: '信件浏览',
+    desc: '按年份阅读 1956–2024 年全部信件中文版',
+    className: 'border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10',
+    iconClass: 'text-blue-400',
+  },
+  {
+    href: '/chat',
+    icon: MessageSquare,
+    title: 'AI 对话',
+    desc: '向 AI 提问，基于原文即时检索并生成回答',
+    className: 'border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10',
+    iconClass: 'text-amber-400',
+  },
+  {
+    href: '/concepts',
+    icon: Lightbulb,
+    title: '概念速查',
+    desc: '20 个核心投资概念，提炼自数十年的智慧',
+    className: 'border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10',
+    iconClass: 'text-purple-400',
+  },
+  {
+    href: '/companies',
+    icon: Building2,
+    title: '公司研究',
+    desc: '伯克希尔旗下及投资的 12 家关联公司',
+    className: 'border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10',
+    iconClass: 'text-emerald-400',
+  },
+  {
+    href: '/people',
+    icon: Users,
+    title: '人物洞察',
+    desc: '巴菲特、芒格及影响他们的关键人物',
+    className: 'border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10',
+    iconClass: 'text-rose-400',
+  },
+]
 
-function SourceCard({ source, index }: { source: Source; index: number }) {
-  const [open, setOpen] = useState(false)
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function HomePage() {
   return (
-    <div className="rounded-lg border border-stone-200 bg-white overflow-hidden text-sm">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-stone-50 transition-colors"
-      >
-        <span className="shrink-0 font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-xs">
-          {source.year}
-        </span>
-        <span className="text-stone-600 truncate flex-1">{source.title}</span>
-        <span className="text-stone-400 shrink-0">[{index + 1}]</span>
-        {open ? (
-          <ChevronUp className="h-3.5 w-3.5 text-stone-400 shrink-0" />
-        ) : (
-          <ChevronDown className="h-3.5 w-3.5 text-stone-400 shrink-0" />
-        )}
-      </button>
-      {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-stone-100">
-          <p className="text-stone-500 leading-relaxed italic text-xs">
-            &ldquo;{source.excerpt}&rdquo;
+    <div className="h-full overflow-y-auto">
+      <div className="min-h-full px-8 py-10 max-w-5xl mx-auto space-y-14">
+
+        {/* ── Hero ── */}
+        <section className="space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium">
+            <BookOpen className="h-3.5 w-3.5" />
+            巴菲特致股东信知识库
+          </div>
+          <h1 className="text-4xl font-bold text-stone-100 leading-tight">
+            探索<span className="text-amber-400">巴菲特</span>半个世纪<br />的投资智慧
+          </h1>
+          <p className="text-stone-400 text-lg max-w-2xl leading-relaxed">
+            收录沃伦·巴菲特 1956 年至 2024 年致合伙人及伯克希尔·哈撒韦股东的全部信件（中文版）。
+            通过 AI 问答、原文浏览、概念速查，深入理解价值投资的核心理念。
           </p>
-        </div>
-      )}
-    </div>
-  )
-}
 
-// ─── Message Bubble ───────────────────────────────────────────────────────────
-
-function MessageBubble({ msg }: { msg: Message }) {
-  if (msg.role === 'user') {
-    return (
-      <div className="flex justify-end">
-        <div className="max-w-[80%] bg-amber-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed">
-          {msg.content}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex gap-3">
-      {/* Avatar */}
-      <div className="shrink-0 w-7 h-7 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center mt-0.5">
-        <BookOpen className="h-3.5 w-3.5 text-amber-600" />
-      </div>
-
-      <div className="flex-1 min-w-0 space-y-3">
-        {/* Answer text */}
-        <div className="bg-white border border-stone-200 rounded-2xl rounded-tl-sm px-4 py-3">
-          {msg.loading && !msg.content ? (
-            <div className="flex items-center gap-2 text-stone-400 text-sm">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              <span>正在检索信件并思考…</span>
-            </div>
-          ) : (
-            <div className="prose prose-sm prose-stone max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-              {msg.loading && (
-                <span className="inline-block w-1 h-4 bg-amber-500 animate-pulse ml-0.5 rounded-sm" />
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Sources */}
-        {msg.sources && msg.sources.length > 0 && !msg.loading && (
-          <div className="space-y-1.5">
-            <p className="text-xs text-stone-400 font-medium uppercase tracking-wider px-1">
-              参考来源
-            </p>
-            {msg.sources.map((src, i) => (
-              <SourceCard key={i} source={src} index={i} />
+          {/* Stats */}
+          <div className="flex flex-wrap gap-6 pt-2">
+            {[
+              { icon: FileText, label: '年份覆盖', value: '1956–2024' },
+              { icon: Calendar, label: '信件数量', value: '约 68 封' },
+              { icon: TrendingUp, label: '年化收益', value: '19.8%' },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-stone-800 border border-stone-700 flex items-center justify-center">
+                  <Icon className="h-4 w-4 text-amber-400" />
+                </div>
+                <div>
+                  <div className="text-xs text-stone-500">{label}</div>
+                  <div className="text-sm font-semibold text-stone-200">{value}</div>
+                </div>
+              </div>
             ))}
           </div>
-        )}
-      </div>
-    </div>
-  )
-}
+        </section>
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
-export default function Home() {
-  const [conversations, setConversations] = useState<Conversation[]>([newConversation()])
-  const [activeId, setActiveId] = useState<string>(conversations[0].id)
-  const [input, setInput] = useState('')
-  const [streaming, setStreaming] = useState(false)
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const abortRef = useRef<AbortController | null>(null)
-
-  const activeConv = conversations.find((c) => c.id === activeId)!
-
-  // Auto-scroll to bottom when messages update
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [activeConv.messages])
-
-  // Auto-resize textarea
-  useEffect(() => {
-    const ta = textareaRef.current
-    if (!ta) return
-    ta.style.height = 'auto'
-    ta.style.height = Math.min(ta.scrollHeight, 160) + 'px'
-  }, [input])
-
-  const updateConv = useCallback(
-    (id: string, updater: (c: Conversation) => Conversation) => {
-      setConversations((prev) => prev.map((c) => (c.id === id ? updater(c) : c)))
-    },
-    []
-  )
-
-  const handleSubmit = useCallback(
-    async (questionOverride?: string) => {
-      const question = (questionOverride ?? input).trim()
-      if (!question || streaming) return
-
-      setInput('')
-      setStreaming(true)
-
-      // Abort previous request if any
-      abortRef.current?.abort()
-      abortRef.current = new AbortController()
-
-      const userMsgId = uid()
-      const assistantMsgId = uid()
-      const convId = activeId
-
-      // Add user message
-      updateConv(convId, (c) => ({
-        ...c,
-        title: c.messages.length === 0 ? question.slice(0, 60) : c.title,
-        messages: [
-          ...c.messages,
-          { id: userMsgId, role: 'user', content: question },
-          { id: assistantMsgId, role: 'assistant', content: '', loading: true },
-        ],
-      }))
-
-      // Build history (exclude the loading assistant message)
-      const history = activeConv.messages.map((m) => ({ role: m.role, content: m.content }))
-
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question, history }),
-          signal: abortRef.current.signal,
-        })
-
-        if (!res.ok || !res.body) {
-          const err = await res.json().catch(() => ({ error: 'Unknown error' }))
-          updateConv(convId, (c) => ({
-            ...c,
-            messages: c.messages.map((m) =>
-              m.id === assistantMsgId
-                ? { ...m, content: `错误：${err.error}`, loading: false }
-                : m
-            ),
-          }))
-          return
-        }
-
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ''
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n')
-          buffer = lines.pop() ?? ''
-
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue
-            const raw = line.slice(6).trim()
-            if (!raw) continue
-
-            try {
-              const event = JSON.parse(raw)
-
-              if (event.type === 'sources') {
-                updateConv(convId, (c) => ({
-                  ...c,
-                  messages: c.messages.map((m) =>
-                    m.id === assistantMsgId ? { ...m, sources: event.sources } : m
-                  ),
-                }))
-              } else if (event.type === 'text') {
-                updateConv(convId, (c) => ({
-                  ...c,
-                  messages: c.messages.map((m) =>
-                    m.id === assistantMsgId
-                      ? { ...m, content: m.content + event.text }
-                      : m
-                  ),
-                }))
-              } else if (event.type === 'done') {
-                updateConv(convId, (c) => ({
-                  ...c,
-                  messages: c.messages.map((m) =>
-                    m.id === assistantMsgId ? { ...m, loading: false } : m
-                  ),
-                }))
-              } else if (event.type === 'error') {
-                updateConv(convId, (c) => ({
-                  ...c,
-                  messages: c.messages.map((m) =>
-                    m.id === assistantMsgId
-                      ? { ...m, content: `错误：${event.message}`, loading: false }
-                      : m
-                  ),
-                }))
-              }
-            } catch {
-              // ignore parse errors
-            }
-          }
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') return
-        updateConv(convId, (c) => ({
-          ...c,
-          messages: c.messages.map((m) =>
-            m.id === assistantMsgId
-              ? { ...m, content: '网络错误，请重试。', loading: false }
-              : m
-          ),
-        }))
-      } finally {
-        setStreaming(false)
-      }
-    },
-    [input, streaming, activeId, activeConv.messages, updateConv]
-  )
-
-  const startNewConversation = () => {
-    const conv = newConversation()
-    setConversations((prev) => [conv, ...prev])
-    setActiveId(conv.id)
-    setInput('')
-  }
-
-  const isEmpty = activeConv.messages.length === 0
-
-  return (
-    <div className="flex flex-col h-screen bg-stone-50 font-sans">
-      <div className="flex flex-1 min-h-0">
-      {/* ── Sidebar ── */}
-      <aside className="w-60 shrink-0 border-r border-stone-200 bg-stone-100 flex flex-col">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 px-4 py-4 border-b border-stone-200">
-          <div className="w-7 h-7 rounded-md bg-amber-500 flex items-center justify-center shrink-0">
-            <BookOpen className="h-4 w-4 text-white" />
-          </div>
-          <div className="leading-tight">
-            <div className="text-sm font-semibold text-stone-800">巴菲特信件</div>
-            <div className="text-[10px] text-stone-400">1977 – 2024</div>
-          </div>
-        </div>
-
-        {/* New conversation button */}
-        <div className="px-3 pt-3">
-          <button
-            onClick={startNewConversation}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-600
-                       hover:bg-stone-200 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            新对话
-          </button>
-        </div>
-
-        {/* Conversation list */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
-          {conversations.map((conv) => (
-            <button
-              key={conv.id}
-              onClick={() => setActiveId(conv.id)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors ${
-                conv.id === activeId
-                  ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-                  : 'text-stone-500 hover:bg-stone-200'
-              }`}
-            >
-              {conv.title}
-            </button>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="px-4 py-3 border-t border-stone-200 text-[10px] text-stone-400">
-          由 DeepSeek 驱动 · 巴菲特致股东信
-        </div>
-      </aside>
-
-      {/* ── Main Chat Area ── */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        <header className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-stone-200 bg-white">
-          <h2 className="text-sm font-medium text-stone-700 truncate">{activeConv.title}</h2>
-          {activeConv.messages.length > 0 && (
-            <button
-              onClick={startNewConversation}
-              className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-600 transition-colors"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              新对话
-            </button>
-          )}
-        </header>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          {isEmpty ? (
-            /* Welcome screen */
-            <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-10">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <BookOpen className="h-7 w-7 text-white" />
-                </div>
-                <h1 className="text-2xl font-semibold text-stone-800 mb-2">
-                  向巴菲特的信件提问
-                </h1>
-                <p className="text-stone-500 text-sm max-w-md mx-auto">
-                  探索沃伦·巴菲特 1977 至 2024 年致伯克希尔·哈撒韦股东信中的投资智慧。
-                </p>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {EXAMPLE_QUESTIONS.map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => handleSubmit(q)}
-                    className="text-left text-sm px-4 py-3 rounded-xl border border-stone-200 bg-white
-                               hover:border-amber-400 hover:bg-amber-50 transition-colors text-stone-600
-                               shadow-sm"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="max-w-2xl mx-auto space-y-6">
-              {activeConv.messages.map((msg) => (
-                <MessageBubble key={msg.id} msg={msg} />
-              ))}
-              <div ref={bottomRef} />
-            </div>
-          )}
-        </div>
-
-        {/* Input area */}
-        <div className="shrink-0 border-t border-stone-200 bg-white px-6 py-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex items-end gap-3 bg-stone-50 border border-stone-200 rounded-2xl px-4 py-2.5
-                            focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-100 transition-all">
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSubmit()
-                  }
-                }}
-                placeholder="向巴菲特的致股东信提问…"
-                rows={1}
-                className="flex-1 bg-transparent resize-none outline-none text-sm text-stone-800
-                           placeholder:text-stone-400 leading-relaxed max-h-40"
-              />
-              <button
-                onClick={() => handleSubmit()}
-                disabled={!input.trim() || streaming}
-                className="shrink-0 w-8 h-8 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40
-                           disabled:cursor-not-allowed flex items-center justify-center transition-colors mb-0.5"
+        {/* ── Feature Cards ── */}
+        <section>
+          <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-widest mb-4">功能入口</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {FEATURE_CARDS.map(({ href, icon: Icon, title, desc, className, iconClass }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`group flex flex-col gap-3 p-5 rounded-xl border transition-all duration-200 hover:scale-[1.02] ${className}`}
               >
-                {streaming ? (
-                  <Loader2 className="h-4 w-4 text-white animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4 text-white" />
-                )}
-              </button>
-            </div>
-            <p className="text-center text-[11px] text-stone-400 mt-2">
-              按 Enter 发送 · Shift+Enter 换行
-            </p>
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-lg bg-stone-800/80 flex items-center justify-center">
+                    <Icon className={`h-4 w-4 ${iconClass}`} />
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-stone-600 group-hover:text-stone-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-stone-100">{title}</div>
+                  <div className="text-xs text-stone-500 mt-1 leading-relaxed">{desc}</div>
+                </div>
+              </Link>
+            ))}
           </div>
-        </div>
-      </main>
+        </section>
+
+        {/* ── AI Chat CTA ── */}
+        <section className="relative rounded-2xl border border-amber-500/20 bg-amber-500/5 overflow-hidden p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="flex-1 space-y-2">
+              <div className="text-xs text-amber-500 font-medium uppercase tracking-wider">巴菲特下午茶</div>
+              <h3 className="text-xl font-semibold text-stone-100">向巴菲特的信件提问</h3>
+              <p className="text-sm text-stone-400 leading-relaxed max-w-lg">
+                AI 助手基于原始信件即时检索相关段落，用巴菲特自己的话回答你的问题。
+                支持多轮对话，所有回答均标注信件来源年份。
+              </p>
+            </div>
+            <Link
+              href="/chat"
+              className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-900 font-semibold text-sm transition-colors"
+            >
+              开始对话
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+
+        {/* ── Concept Tag Cloud ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-widest">核心投资概念</h2>
+            <Link href="/concepts" className="text-xs text-stone-600 hover:text-amber-400 flex items-center gap-1 transition-colors">
+              查看全部 <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {CONCEPTS.map((concept) => (
+              <Link
+                key={concept}
+                href={`/chat?q=${encodeURIComponent(concept)}`}
+                className="px-3 py-1.5 rounded-full text-sm border border-stone-700 bg-stone-900/60 text-stone-400
+                           hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300 transition-all"
+              >
+                {concept}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Company Cards ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-widest">关联公司</h2>
+            <Link href="/companies" className="text-xs text-stone-600 hover:text-amber-400 flex items-center gap-1 transition-colors">
+              查看全部 <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {COMPANIES.map((co) => (
+              <Link
+                key={co.name}
+                href="/companies"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-stone-700/50 bg-stone-900/50 hover:bg-stone-800/60 hover:border-stone-600 transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-stone-800 border border-stone-700 flex items-center justify-center shrink-0">
+                  <Building2 className="h-3.5 w-3.5 text-stone-500 group-hover:text-amber-400 transition-colors" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-stone-200 truncate">{co.name}</div>
+                  <div className="text-xs text-stone-600 truncate">{co.desc}</div>
+                </div>
+                <span className="shrink-0 text-[10px] text-stone-700 ml-auto">{co.since}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── People Cards ── */}
+        <section className="pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-widest">关键人物</h2>
+            <Link href="/people" className="text-xs text-stone-600 hover:text-amber-400 flex items-center gap-1 transition-colors">
+              查看全部 <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {PEOPLE.map((person) => (
+              <Link
+                key={person.name}
+                href="/people"
+                className="flex gap-4 p-4 rounded-xl border border-stone-700/50 bg-stone-900/50 hover:bg-stone-800/60 hover:border-stone-600 transition-all"
+              >
+                <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <Users className="h-4 w-4 text-amber-400" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold text-stone-200">{person.name}</span>
+                    <span className="text-[10px] text-stone-600 bg-stone-800 border border-stone-700 px-1.5 py-0.5 rounded">{person.years}</span>
+                  </div>
+                  <div className="text-xs text-stone-500 mt-0.5">{person.title}</div>
+                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed line-clamp-2">{person.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
       </div>
     </div>
   )
