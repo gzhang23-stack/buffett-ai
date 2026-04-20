@@ -369,11 +369,21 @@ function metaFromFilename(filename: string): LetterMeta | null {
     return { slug: base, year, label: '致股东信', type: 'berkshire' }
   }
 
+  // 合伙人年度信（与伯克希尔同年）：1965-partnership
+  const ptMatch = base.match(/^(\d{4})-partnership$/)
+  if (ptMatch) {
+    const year = parseInt(ptMatch[1], 10)
+    return { slug: base, year, label: '年度信', type: 'partnership' }
+  }
+
   // 纯年份：1977 / 1960
+  // 1965-1969 的纯年份文件由 scrape_berkshire.py 生成（伯克希尔内容），
+  // 单独子信件（-berkshire 后缀）已存在，跳过这些重复文件
   const yearMatch = base.match(/^(\d{4})$/)
   if (yearMatch) {
     const year = parseInt(yearMatch[1], 10)
-    const type: 'partnership' | 'berkshire' = year <= 1969 ? 'partnership' : 'berkshire'
+    if (year >= 1965 && year <= 1969) return null  // 由 -berkshire 子信件代替
+    const type: 'partnership' | 'berkshire' = year <= 1964 ? 'partnership' : 'berkshire'
     return { slug: base, year, label: '年度信', type }
   }
 
