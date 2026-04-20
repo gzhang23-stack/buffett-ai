@@ -84,7 +84,17 @@ function LettersInner() {
       } else if (!data.text) {
         setTextError(`${year} 年信件无法加载，请稍后重试。`)
       } else {
-        setFullText(data.text)
+        const SEPARATOR = '════════════════════════════════════════'
+        const sepIdx = data.text.indexOf(SEPARATOR)
+        if (group === 'berkshire' && sepIdx !== -1) {
+          // 截取分隔符之后的伯克希尔股东信部分
+          setFullText(data.text.slice(sepIdx + SEPARATOR.length).replace(/^[\s\S]*?】\n*/, '').trimStart())
+        } else if (group === 'partnership' && sepIdx !== -1) {
+          // 只取合伙人信部分（分隔符之前）
+          setFullText(data.text.slice(0, sepIdx).trimEnd())
+        } else {
+          setFullText(data.text)
+        }
       }
     } catch {
       setTextError('加载失败，请检查网络后重试。')
