@@ -240,7 +240,7 @@ function LettersInner() {
                       &ldquo;{hit.excerpt}&rdquo;
                     </p>
                     <button
-                      onClick={() => loadYear(hit.year)}
+                      onClick={() => loadYear(hit.year, hit.year <= 1969 ? 'partnership' : 'berkshire')}
                       className="mt-2 text-xs text-amber-500 hover:text-amber-300 transition-colors"
                     >
                       阅读全文 →
