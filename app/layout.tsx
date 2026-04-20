@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className={`${inter.className} h-full bg-[#0f0f0f] text-stone-200 overflow-hidden`}>
         <div className="flex h-full">
           <Sidebar />
-          <main className="flex-1 min-w-0 overflow-hidden">
+          <main className="flex-1 min-w-0 overflow-hidden pt-14 md:pt-0">
             {children}
           </main>
         </div>
