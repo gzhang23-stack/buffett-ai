@@ -130,6 +130,47 @@ function cleanPdfText(text: string): string {
   return lines.slice(startIdx).join('\n')
 }
 
+/** 把文本中的 ASCII 框线表格（┌┬┐│├┼┤└┴┘）转换为 <<<TABLE>>> 标记格式 */
+function convertAsciiTables(text: string): string {
+  const lines = text.split('\n')
+  const out: string[] = []
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i]
+    // 表格起始行：以 ┌ 开头
+    if (line.trimStart().startsWith('┌')) {
+      const tableLines: string[] = []
+      // 收集到 └ 行（含）
+      while (i < lines.length) {
+        tableLines.push(lines[i])
+        if (lines[i].trimStart().startsWith('└')) { i++; break }
+        i++
+      }
+      // 提取 │...│ 数据行，跳过 ├┼┤ 分隔行
+      const rows: string[][] = []
+      for (const tl of tableLines) {
+        const trimmed = tl.trimStart()
+        if (trimmed.startsWith('│') && trimmed.endsWith('│')) {
+          // 按 │ 分割，去首尾空元素，trim 每格
+          const cells = trimmed.split('│').slice(1, -1).map((c) => c.trim())
+          rows.push(cells)
+        }
+      }
+      if (rows.length > 0) {
+        out.push('<<<TABLE>>>')
+        for (const row of rows) {
+          out.push(row.map((c) => c.replace(/\|/g, '｜')).join('|'))
+        }
+        out.push('<<<ENDTABLE>>>')
+      }
+    } else {
+      out.push(line)
+      i++
+    }
+  }
+  return out.join('\n')
+}
+
 /** 全量清洗：读一个文件并返回干净文本，失败返回 null */
 export function readAndCleanFile(filePath: string): string | null {
   let buf: Buffer
@@ -177,6 +218,11 @@ export function readAndCleanFile(filePath: string): string | null {
   // 清洗 PDF 提取文本（仅英文文件需要，中文文件跳过）
   if (!isZhFile) {
     text = cleanPdfText(text)
+  }
+
+  // 把 ASCII 框线表格转换为 <<<TABLE>>> 标记（仅当文件还未转换时生效）
+  if (!text.includes('<<<TABLE>>>') && text.includes('┌')) {
+    text = convertAsciiTables(text)
   }
 
   // 规范化空白
