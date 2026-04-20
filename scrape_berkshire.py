@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 """
 从 learnbuffett.com 抓取伯克希尔致股东信，写入 data/zh/ 目录。
-每封信作为独立文件，若文件已存在则跳过（除非 --force）。
+保留表格内容，转换为 ASCII 文本表格。
 """
 import os, re, time, urllib.parse, argparse
 import requests
 
 SESSION = requests.Session()
-SESSION.trust_env = False  # 忽略系统代理（注册表/环境变量）
+SESSION.trust_env = False
 
 BASE = "https://learnbuffett.com"
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data", "zh")
-
-# 需要抓取的年份（仅 berkshire 股东信）
-DEFAULT_YEARS = list(range(1965, 2025))   # 1965-2024
+DEFAULT_YEARS = list(range(1965, 2025))
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; research-bot/1.0)",
@@ -28,16 +26,55 @@ def fetch(url: str) -> str:
     return resp.text
 
 
+def table_to_text(table_html: str) -> str:
+    """把 <table> HTML 转为对齐的纯文本表格。"""
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', table_html, re.DOTALL)
+    parsed = []
+    for row in rows:
+        cells = re.findall(r'<t[hd][^>]*>(.*?)</t[hd]>', row, re.DOTALL)
+        cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
+        cells = [c.replace('&amp;', '&').replace('&nbsp;', ' ')
+                  .replace('&lt;', '<').replace('&gt;', '>') for c in cells]
+        if any(c for c in cells):
+            parsed.append(cells)
+    if not parsed:
+        return ''
+
+    col_count = max(len(r) for r in parsed)
+    widths = [0] * col_count
+    for row in parsed:
+        for i, cell in enumerate(row):
+            if i < col_count:
+                widths[i] = max(widths[i], len(cell))
+
+    sep = '┼'.join('─' * (w + 2) for w in widths)
+    lines = ['┌' + '┬'.join('─' * (w + 2) for w in widths) + '┐']
+    for ri, row in enumerate(parsed):
+        cells_padded = []
+        for i in range(col_count):
+            cell = row[i] if i < len(row) else ''
+            cells_padded.append(f' {cell:<{widths[i]}} ')
+        lines.append('│' + '│'.join(cells_padded) + '│')
+        if ri == 0:
+            lines.append('├' + sep + '┤')
+    lines.append('└' + '┴'.join('─' * (w + 2) for w in widths) + '┘')
+    return '\n'.join(lines)
+
+
 def extract_text(html: str) -> str:
-    """从 <article class="article"> 提取纯文本。"""
+    """从 <article class="article"> 提取文本，保留表格结构。"""
     m = re.search(r'<article[^>]*class="article"[^>]*>(.*?)</article>', html, re.DOTALL)
     if not m:
         return ""
     content = m.group(1)
 
-    # 把 wikilink / 普通链接标签替换为纯文字
-    content = re.sub(r'<a[^>]*class="wikilink"[^>]*>([^<]+)</a>', r'\1', content)
+    # 链接替换为纯文字
     content = re.sub(r'<a[^>]*>([^<]*)</a>', r'\1', content)
+
+    # 先处理表格（在其他标签清理之前）
+    def replace_table(tm):
+        return '\n\n' + table_to_text(tm.group(0)) + '\n\n'
+    content = re.sub(r'<table[\s\S]*?</table>', replace_table, content, flags=re.DOTALL)
 
     # 段落/标题换行
     content = re.sub(r'<h[1-6][^>]*>', '\n\n### ', content)
@@ -50,11 +87,12 @@ def extract_text(html: str) -> str:
     content = re.sub(r'<[^>]+>', '', content)
 
     # 解码 HTML 实体
-    content = content.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
-    content = content.replace('&quot;', '"').replace('&#39;', "'").replace('&nbsp;', ' ')
-    content = content.replace('&ldquo;', '"').replace('&rdquo;', '"')
-    content = content.replace('&lsquo;', ''').replace('&rsquo;', ''')
-    content = content.replace('&mdash;', '—').replace('&ndash;', '–')
+    content = (content
+               .replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
+               .replace('&quot;', '"').replace('&#39;', "'").replace('&nbsp;', ' ')
+               .replace('&ldquo;', '"').replace('&rdquo;', '"')
+               .replace('&lsquo;', '\u2018').replace('&rsquo;', '\u2019')
+               .replace('&mdash;', '—').replace('&ndash;', '–'))
 
     # 规范化空白
     content = re.sub(r'\r\n|\r', '\n', content)
@@ -66,7 +104,6 @@ def extract_text(html: str) -> str:
 
 
 def url_for(year: int) -> str:
-    path = f"/berkshire/{year}-巴菲特致股东信.html"
     encoded = "/berkshire/" + urllib.parse.quote(f"{year}-巴菲特致股东信.html")
     return BASE + encoded
 
@@ -75,7 +112,7 @@ def scrape_year(year: int, force: bool = False) -> bool:
     out_path = os.path.join(DATA_DIR, f"{year}.txt")
 
     if os.path.exists(out_path) and not force:
-        print(f"  {year}: 已存在，跳过（--force 覆盖）")
+        print(f"  {year}: 已存在，跳过")
         return False
 
     url = url_for(year)
@@ -85,48 +122,37 @@ def scrape_year(year: int, force: bool = False) -> bool:
         print(f"  {year}: 抓取失败 — {e}")
         return False
 
-    # 检测是否 404 页面
     if '404' in html[:2000] and '抱歉，这个页面不存在' in html:
         print(f"  {year}: 页面不存在 (404)")
         return False
 
     text = extract_text(html)
     if len(text.replace(' ', '').replace('\n', '')) < 200:
-        print(f"  {year}: 提取文本过短，跳过（可能格式变化）")
+        print(f"  {year}: 提取文本过短，跳过")
         return False
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(text)
 
-    print(f"  {year}: OK  ({len(text)} 字符) → {out_path}")
+    print(f"  {year}: OK  ({len(text)} 字符)")
     return True
 
 
 def main():
-    parser = argparse.ArgumentParser(description="抓取 learnbuffett.com 伯克希尔股东信")
-    parser.add_argument("--years", nargs="+", type=int, default=DEFAULT_YEARS,
-                        help="指定年份列表，默认 1965-2024")
-    parser.add_argument("--force", action="store_true",
-                        help="覆盖已存在文件")
-    parser.add_argument("--delay", type=float, default=1.5,
-                        help="每次请求间隔秒数（默认 1.5）")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--years", nargs="+", type=int, default=DEFAULT_YEARS)
+    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--delay", type=float, default=1.5)
     args = parser.parse_args()
 
     os.makedirs(DATA_DIR, exist_ok=True)
-    print(f"目标目录: {DATA_DIR}")
-    print(f"年份范围: {min(args.years)}–{max(args.years)}, 共 {len(args.years)} 年\n")
+    print(f"目标: {DATA_DIR}  年份: {min(args.years)}–{max(args.years)}\n")
 
-    ok, skip, fail = 0, 0, 0
     for year in sorted(args.years):
-        result = scrape_year(year, force=args.force)
-        if result is True:
-            ok += 1
-        elif result is False:
-            # 区分跳过和失败已在函数内打印
-            pass
+        scrape_year(year, force=args.force)
         time.sleep(args.delay)
 
-    print(f"\n完成。")
+    print("\n完成。")
 
 
 if __name__ == "__main__":
