@@ -12,8 +12,8 @@ interface SearchHit {
 }
 
 // 所有年份分组（有文件的年份由API返回，这里定义两个分组范围）
-const PARTNERSHIP_RANGE = { label: '合伙公司致合伙人信', start: 1956, end: 1969 }
-const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1977, end: 2025 }
+const PARTNERSHIP_RANGE = { label: '合伙公司致合伙人信', start: 1956, end: 1970 }
+const BERKSHIRE_RANGE = { label: '致伯克希尔股东信', start: 1965, end: 2025 }
 
 function LettersInner() {
   const router = useRouter()
@@ -129,7 +129,7 @@ function LettersInner() {
   }
 
   const currentTitle = selectedYear
-    ? (selectedYear <= 1969
+    ? (selectedYear <= 1970
         ? `${selectedYear} 年巴菲特合伙公司致合伙人信`
         : `${selectedYear} 年致伯克希尔·哈撒韦股东信`)
     : ''
@@ -301,7 +301,7 @@ function LettersInner() {
                 <FileText className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">从左侧选择年份阅读信件全文</p>
-              <p className="text-stone-600 text-sm">涵盖 1957–2024 年，中文版本</p>
+              <p className="text-stone-600 text-sm">涵盖 1956–2024 年，中文版本</p>
             </div>
           )}
         </div>
