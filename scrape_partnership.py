@@ -128,9 +128,11 @@ def extract_text(html: str) -> str:
     content = (content
                .replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
                .replace('&quot;', '"').replace('&#39;', "'").replace('&nbsp;', ' ')
+               .replace('&emsp;', '').replace('&ensp;', '').replace('&thinsp;', '')
                .replace('&ldquo;', '\u201c').replace('&rdquo;', '\u201d')
                .replace('&lsquo;', '\u2018').replace('&rsquo;', '\u2019')
-               .replace('&mdash;', '\u2014').replace('&ndash;', '\u2013'))
+               .replace('&mdash;', '\u2014').replace('&ndash;', '\u2013')
+               .replace('&hellip;', '\u2026'))
 
     # 规范化空白（保留表格标记行不被压缩）
     content = re.sub(r'\r\n|\r', '\n', content)

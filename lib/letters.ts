@@ -149,8 +149,27 @@ export function readAndCleanFile(filePath: string): string | null {
     text = stripHtml(text)
   }
 
+  // 修复残留的 HTML 实体（中文 txt 文件中可能遗留 &emsp; 等）
+  text = text
+    .replace(/&emsp;/g, '')
+    .replace(/&ensp;/g, '')
+    .replace(/&thinsp;/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&ldquo;/g, '\u201c')
+    .replace(/&rdquo;/g, '\u201d')
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&mdash;/g, '\u2014')
+    .replace(/&ndash;/g, '\u2013')
+    .replace(/&hellip;/g, '\u2026')
+
   // 修复 Mojibake（仅英文文件需要，中文 utf8 文件跳过）
-  const isZhFile = filePath.includes('zh_txt')
+  const isZhFile = filePath.includes('/zh/') || filePath.includes('\\zh\\')
   if (!isZhFile) {
     text = fixMojibake(text)
   }
