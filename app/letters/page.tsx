@@ -126,7 +126,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
       // No more tables — render remaining text
       if (remaining.trim()) {
         segments.push(
-          <span key={key++} className="whitespace-pre-wrap">
+          <span key={key++} className="block">
             {remaining}
           </span>
         )
@@ -139,7 +139,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
       const before = remaining.slice(0, startIdx)
       if (before.trim()) {
         segments.push(
-          <span key={key++} className="whitespace-pre-wrap">
+          <span key={key++} className="block">
             {before}
           </span>
         )
@@ -313,7 +313,7 @@ function LettersInner() {
               handleSearch(searchQuery)
               if (searchQuery.trim()) router.push(`/letters?q=${encodeURIComponent(searchQuery.trim())}`)
             }}
-            className="flex items-center gap-2 max-w-4xl"
+            className="flex items-center gap-2 w-full"
           >
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />

@@ -159,7 +159,7 @@ function MungerInner() {
               handleSearch(searchQuery)
               if (searchQuery.trim()) router.push(`/munger?q=${encodeURIComponent(searchQuery.trim())}`)
             }}
-            className="flex items-center gap-2 max-w-4xl"
+            className="flex items-center gap-2 w-full"
           >
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />
@@ -246,7 +246,7 @@ function MungerInner() {
           )}
 
           {!loading && error && (
-            <div className="px-6 py-6 max-w-full">
+            <div className="px-4 py-6 w-full">
               <div className="flex items-start gap-3 p-4 rounded-xl border border-red-500/20 bg-red-500/5">
                 <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
                 <div>
@@ -272,7 +272,7 @@ function MungerInner() {
                   <h1 className="text-3xl font-bold text-stone-100 leading-tight">{selectedChapter?.title}</h1>
                 </div>
               </div>
-              <div className="text-[16px] text-stone-300 leading-[1.8] whitespace-pre-wrap break-words w-full">
+              <div className="text-[16px] text-stone-300 leading-[1.8] break-words w-full">
                 {content}
               </div>
             </div>
