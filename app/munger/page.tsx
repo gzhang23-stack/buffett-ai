@@ -159,7 +159,7 @@ function MungerInner() {
               handleSearch(searchQuery)
               if (searchQuery.trim()) router.push(`/munger?q=${encodeURIComponent(searchQuery.trim())}`)
             }}
-            className="flex items-center gap-2 max-w-2xl"
+            className="flex items-center gap-2 max-w-4xl"
           >
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />
@@ -199,7 +199,7 @@ function MungerInner() {
           )}
 
           {!searching && searchResults.length > 0 && (
-            <div className="px-6 py-6 max-w-full space-y-4">
+            <div className="px-12 py-6 max-w-[1400px] mx-auto space-y-4">
               <p className="text-xs text-stone-500 mb-4">
                 找到 <span className="text-amber-400 font-medium">{searchResults.length}</span> 条相关内容
               </p>
@@ -258,7 +258,7 @@ function MungerInner() {
           )}
 
           {!loading && !error && content && selectedSlug && (
-            <div className="px-8 py-8 w-full">
+            <div className="px-12 py-8 w-full max-w-[1400px] mx-auto">
               <div className="mb-8">
                 <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
                   芒格之道

@@ -336,7 +336,7 @@ function ChatInner() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {isEmpty ? (
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <div className="text-center mb-10">
                 <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="h-7 w-7 text-amber-400" />
@@ -361,7 +361,7 @@ function ChatInner() {
               </div>
             </div>
           ) : (
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
               {activeConv.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} />
               ))}
@@ -372,7 +372,7 @@ function ChatInner() {
 
         {/* Input */}
         <div className="shrink-0 border-t border-stone-800 bg-[#0f0f0f] px-6 py-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="flex items-end gap-3 bg-stone-900/80 border border-stone-700 rounded-2xl px-4 py-2.5
                             focus-within:border-amber-500/50 transition-all">
               <textarea
