@@ -136,7 +136,7 @@ export default function Sidebar() {
       </div>
 
       {/* ── 桌面端固定侧边栏 ── */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-stone-800 bg-[#0a0a0a]">
+      <aside className="hidden md:flex w-44 shrink-0 flex-col border-r border-stone-800 bg-[#0a0a0a]">
         {/* Logo */}
         <Link
           href="/"

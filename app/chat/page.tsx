@@ -289,7 +289,7 @@ function ChatInner() {
   return (
     <div className="flex h-full overflow-hidden">
       {/* ── Conversation list ── */}
-      <aside className="w-48 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex flex-col overflow-hidden">
+      <aside className="w-40 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex flex-col overflow-hidden">
         <div className="px-3 py-3 shrink-0">
           <button
             onClick={startNew}
