@@ -306,7 +306,7 @@ function LettersInner() {
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Search bar */}
-        <div className="shrink-0 px-6 py-3 border-b border-stone-800 bg-[#0f0f0f]">
+        <div className="shrink-0 px-4 py-3 border-b border-stone-800 bg-[#0f0f0f]">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -353,7 +353,7 @@ function LettersInner() {
           )}
 
           {!searching && searchResults.length > 0 && (
-            <div className="px-6 py-6 w-full space-y-4">
+            <div className="px-4 py-6 w-full space-y-4">
               <p className="text-xs text-stone-500 mb-4">
                 找到 <span className="text-amber-400 font-medium">{searchResults.length}</span> 条相关段落
               </p>
