@@ -272,8 +272,10 @@ function MungerInner() {
                   <h1 className="text-3xl font-bold text-stone-100 leading-tight">{selectedChapter?.title}</h1>
                 </div>
               </div>
-              <div className="text-[16px] text-stone-300 leading-[1.8] break-words w-full">
-                {content}
+              <div className="text-[16px] text-stone-300 leading-[1.8] w-full space-y-4">
+                {content.split('\n\n').filter(p => p.trim()).map((para, i) => (
+                  <p key={i} className="break-words">{para}</p>
+                ))}
               </div>
             </div>
           )}

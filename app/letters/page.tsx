@@ -123,38 +123,47 @@ function renderLetterContent(text: string): React.ReactNode[] {
   while (remaining.length > 0) {
     const startIdx = remaining.indexOf(TABLE_START)
     if (startIdx === -1) {
-      // No more tables — render remaining text
+      // No more tables — render remaining text as paragraphs
       if (remaining.trim()) {
-        segments.push(
-          <span key={key++} className="block">
-            {remaining}
-          </span>
-        )
+        const paragraphs = remaining.split('\n\n').filter(p => p.trim())
+        paragraphs.forEach(para => {
+          segments.push(
+            <p key={key++} className="break-words mb-4">
+              {para}
+            </p>
+          )
+        })
       }
       break
     }
 
-    // Text before table
+    // Text before table — split into paragraphs
     if (startIdx > 0) {
       const before = remaining.slice(0, startIdx)
       if (before.trim()) {
-        segments.push(
-          <span key={key++} className="block">
-            {before}
-          </span>
-        )
+        const paragraphs = before.split('\n\n').filter(p => p.trim())
+        paragraphs.forEach(para => {
+          segments.push(
+            <p key={key++} className="break-words mb-4">
+              {para}
+            </p>
+          )
+        })
       }
     }
 
     // Extract table block
     const endIdx = remaining.indexOf(TABLE_END, startIdx)
     if (endIdx === -1) {
-      // Malformed — treat rest as text
-      segments.push(
-        <span key={key++} className="whitespace-pre-wrap">
-          {remaining.slice(startIdx)}
-        </span>
-      )
+      // Malformed — treat rest as paragraphs
+      const paragraphs = remaining.slice(startIdx).split('\n\n').filter(p => p.trim())
+      paragraphs.forEach(para => {
+        segments.push(
+          <p key={key++} className="break-words mb-4">
+            {para}
+          </p>
+        )
+      })
       break
     }
 
