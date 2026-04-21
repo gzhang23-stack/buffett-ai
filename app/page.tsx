@@ -39,7 +39,7 @@ const PEOPLE = [
   {
     name: '查理·芒格',
     title: '伯克希尔·哈撒韦 副董事长',
-    desc: '多元思维框架的倡导者，推动巴菲特从"雪茄烟蒂"进化为买好公司。',
+    desc: '多元思维框架的倡导者，巴菲特的长期合作伙伴。',
     years: '1978–2023',
   },
   {
@@ -93,7 +93,7 @@ const FEATURE_CARDS = [
     href: '/people',
     icon: Users,
     title: '人物洞察',
-    desc: '巴菲特、芒格及影响他们的关键人物',
+    desc: '巴菲特及影响他的关键人物',
     className: 'border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10',
     iconClass: 'text-rose-400',
   },
