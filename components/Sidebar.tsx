@@ -31,14 +31,14 @@ function NavContent({ onClose }: { onClose?: () => void }) {
     <>
       {/* Search */}
       <form onSubmit={handleSearch} className="px-3 pt-3">
-        <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
-          <Search className="h-3.5 w-3.5 text-stone-500 shrink-0" />
+        <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg bg-stone-50 border border-stone-300 focus-within:border-amber-500/50 transition-all">
+          <Search className="h-3.5 w-3.5 text-stone-400 shrink-0" />
           <input
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="搜索信件内容…"
-            className="flex-1 bg-transparent text-xs text-stone-300 placeholder:text-stone-600 outline-none min-w-0"
+            className="flex-1 bg-transparent text-xs text-stone-700 placeholder:text-stone-400 outline-none min-w-0"
           />
         </div>
       </form>
@@ -54,15 +54,15 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               onClick={onClose}
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-all group ${
                 active
-                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                  : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800 border border-transparent'
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                  : 'text-stone-600 hover:text-stone-800 hover:bg-stone-50 border border-transparent'
               }`}
             >
-              <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-amber-400' : 'text-stone-600 group-hover:text-stone-400'}`} />
+              <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-amber-600' : 'text-stone-400 group-hover:text-stone-600'}`} />
               <span className="flex-1 truncate">{label}</span>
               {badge && (
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                  active ? 'bg-amber-500/20 text-amber-400' : 'bg-stone-800 text-stone-600 border border-stone-700'
+                  active ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500 border border-stone-200'
                 }`}>
                   {badge}
                 </span>
@@ -73,9 +73,9 @@ function NavContent({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-stone-800">
-        <p className="text-[10px] text-stone-600">由 DeepSeek AI 驱动</p>
-        <p className="text-[10px] text-stone-700 mt-0.5">数据覆盖 1956–2024 年</p>
+      <div className="px-4 py-3 border-t border-stone-200">
+        <p className="text-[10px] text-stone-500">由 DeepSeek AI 驱动</p>
+        <p className="text-[10px] text-stone-400 mt-0.5">数据覆盖 1956–2024 年</p>
       </div>
     </>
   )
@@ -87,47 +87,47 @@ export default function Sidebar() {
   return (
     <>
       {/* ── 移动端顶部栏 ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 h-14 border-b border-stone-800 bg-[#0a0a0a]">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 h-14 border-b border-stone-300 bg-white">
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-1.5 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800 transition-colors"
+          className="p-1.5 rounded-lg text-stone-600 hover:text-stone-800 hover:bg-stone-50 transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
         <Link href="/" className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md bg-amber-500 flex items-center justify-center shrink-0">
-            <BookOpen className="h-3.5 w-3.5 text-stone-900" />
+            <BookOpen className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-sm font-semibold text-stone-100">巴菲特知识库</span>
+          <span className="text-sm font-semibold text-stone-800">巴菲特知识库</span>
         </Link>
       </div>
 
       {/* ── 移动端抽屉遮罩 ── */}
       {mobileOpen && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-black/60"
+          className="md:hidden fixed inset-0 z-50 bg-black/40"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* ── 移动端抽屉侧边栏 ── */}
-      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 flex flex-col border-r border-stone-800 bg-[#0a0a0a] transition-transform duration-200 ${
+      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 flex flex-col border-r border-stone-300 bg-white transition-transform duration-200 ${
         mobileOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         {/* 抽屉头部 */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-stone-800">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-stone-300">
           <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center">
-              <BookOpen className="h-4 w-4 text-stone-900" />
+              <BookOpen className="h-4 w-4 text-white" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-stone-100">巴菲特知识库</div>
+              <div className="text-sm font-semibold text-stone-800">巴菲特知识库</div>
               <div className="text-[10px] text-stone-500">1956 – 2024</div>
             </div>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-300 hover:bg-stone-800"
+            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-50"
           >
             <X className="h-4 w-4" />
           </button>
@@ -136,17 +136,17 @@ export default function Sidebar() {
       </div>
 
       {/* ── 桌面端固定侧边栏 ── */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-stone-800 bg-[#0a0a0a]">
+      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-stone-300 bg-white">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 px-4 py-4 border-b border-stone-800 hover:bg-stone-900 transition-colors group"
+          className="flex items-center gap-2.5 px-4 py-4 border-b border-stone-300 hover:bg-stone-50 transition-colors group"
         >
           <div className="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center shrink-0">
-            <BookOpen className="h-4 w-4 text-stone-900" />
+            <BookOpen className="h-4 w-4 text-white" />
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-semibold text-stone-100 group-hover:text-amber-400 transition-colors">
+            <div className="text-sm font-semibold text-stone-800 group-hover:text-amber-600 transition-colors">
               巴菲特知识库
             </div>
             <div className="text-[10px] text-stone-500">1956 – 2024</div>
