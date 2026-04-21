@@ -129,7 +129,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
         paragraphs.forEach(para => {
           segments.push(
             <p key={key++} className="break-words mb-4">
-              {para}
+              {para.replace(/\n/g, ' ')}
             </p>
           )
         })
@@ -145,7 +145,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
         paragraphs.forEach(para => {
           segments.push(
             <p key={key++} className="break-words mb-4">
-              {para}
+              {para.replace(/\n/g, ' ')}
             </p>
           )
         })
@@ -160,7 +160,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
       paragraphs.forEach(para => {
         segments.push(
           <p key={key++} className="break-words mb-4">
-            {para}
+            {para.replace(/\n/g, ' ')}
           </p>
         )
       })

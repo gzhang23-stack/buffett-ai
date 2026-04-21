@@ -274,7 +274,7 @@ function MungerInner() {
               </div>
               <div className="text-[16px] text-stone-300 leading-[1.8] w-full space-y-4">
                 {content.split('\n\n').filter(p => p.trim()).map((para, i) => (
-                  <p key={i} className="break-words">{para}</p>
+                  <p key={i} className="break-words">{para.replace(/\n/g, ' ')}</p>
                 ))}
               </div>
             </div>
