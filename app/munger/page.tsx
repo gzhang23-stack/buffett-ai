@@ -272,8 +272,24 @@ function MungerInner() {
                   <h1 className="text-3xl font-bold text-stone-100 leading-tight">{selectedChapter?.title}</h1>
                 </div>
               </div>
-              <div className="text-[16px] text-stone-300 leading-[1.8] whitespace-pre-wrap break-words w-full">
-                {content}
+              <div className="text-[16px] text-stone-300 leading-[1.8] w-full space-y-4">
+                {content.split('\n\n').map((block, i) => {
+                  const trimmed = block.trim()
+                  // 空块或只有空格 - 可能是图片占位符
+                  if (!trimmed || /^\s+$/.test(block)) {
+                    return (
+                      <div key={i} className="h-48 bg-stone-800/30 border border-stone-700/50 rounded-lg flex items-center justify-center text-stone-600 text-sm">
+                        [图片占位]
+                      </div>
+                    )
+                  }
+                  // 普通段落 - 移除段落内换行，让文本自动换行
+                  return (
+                    <p key={i} className="break-words">
+                      {trimmed.replace(/\n/g, ' ')}
+                    </p>
+                  )
+                })}
               </div>
             </div>
           )}
