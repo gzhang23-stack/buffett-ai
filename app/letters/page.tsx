@@ -21,39 +21,91 @@ interface LetterMeta {
 // ── Table rendering ──────────────────────────────────────────────────────────
 
 function LetterTable({ raw }: { raw: string }) {
-  const rows = raw.trim().split('\n').map((line) => line.split('|'))
-  if (rows.length === 0) return null
-  const [header, ...body] = rows
+  const lines = raw.trim().split('\n').filter((l) => l.trim().length > 0)
+  if (lines.length === 0) return null
+
+  // Determine max column count from pipe-delimited rows
+  const maxCols = lines.reduce((m, l) => {
+    if (!l.includes('|')) return m
+    return Math.max(m, l.split('|').length)
+  }, 1)
+
+  // Detect header rows: first row is always header if it has pipes
+  // Additional rows are headers only if they look like sub-headers (not data)
+  let headerEnd = 1 // At least first row
+  if (lines.length > 0 && lines[0].includes('|')) {
+    // Check if second row is also a header (e.g., "合计|合计|..." or "(千美元)|1984|...")
+    if (lines.length > 1 && lines[1].includes('|')) {
+      const secondRow = lines[1]
+      // If second row has mostly repeated words or units, it's a sub-header
+      const cells = secondRow.split('|').map(c => c.trim())
+      const uniqueCells = new Set(cells)
+      const hasRepeats = uniqueCells.size < cells.length * 0.7
+      const hasUnits = /^\(.*\)|^（.*）/.test(cells[0]) // First cell is unit like "(千美元)"
+      if (hasRepeats || hasUnits) {
+        headerEnd = 2
+        // Check third row too
+        if (lines.length > 2 && lines[2].includes('|')) {
+          const thirdRow = lines[2]
+          const thirdCells = thirdRow.split('|').map(c => c.trim())
+          // If third row is years/numbers pattern, it's still header
+          if (thirdCells.every(c => /^\d{4}$|^（.*）/.test(c) || c.length < 8)) {
+            headerEnd = 3
+          }
+        }
+      }
+    }
+  }
+  const headerRows = lines.slice(0, headerEnd)
+  const bodyRows = lines.slice(headerEnd)
+
   return (
     <div className="overflow-x-auto my-4 rounded-lg border border-stone-700">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="bg-stone-800 border-b border-stone-600">
-            {header.map((cell, i) => (
-              <th
-                key={i}
-                className="px-4 py-2.5 text-left font-semibold text-amber-300 whitespace-nowrap"
-              >
-                {cell.trim()}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {body.map((row, ri) => (
-            <tr
-              key={ri}
-              className={`border-b border-stone-800 ${
-                ri % 2 === 0 ? 'bg-stone-900/40' : 'bg-stone-900/10'
-              } hover:bg-stone-800/60 transition-colors`}
-            >
-              {row.map((cell, ci) => (
-                <td key={ci} className="px-4 py-2 text-stone-300 whitespace-nowrap">
+          {headerRows.map((row, ri) => (
+            <tr key={ri} className="bg-stone-800 border-b border-stone-600">
+              {row.split('|').map((cell, ci) => (
+                <th
+                  key={ci}
+                  className="px-4 py-2 text-left font-semibold text-amber-300 whitespace-nowrap"
+                >
                   {cell.trim()}
-                </td>
+                </th>
               ))}
             </tr>
           ))}
+        </thead>
+        <tbody>
+          {bodyRows.map((row, ri) => {
+            if (!row.includes('|')) {
+              // Group label row — span all columns
+              return (
+                <tr key={ri} className="bg-stone-800/70 border-b border-stone-700">
+                  <td
+                    colSpan={maxCols}
+                    className="px-4 py-1.5 text-xs font-semibold text-amber-400/80 uppercase tracking-wide"
+                  >
+                    {row.trim()}
+                  </td>
+                </tr>
+              )
+            }
+            return (
+              <tr
+                key={ri}
+                className={`border-b border-stone-800 ${
+                  ri % 2 === 0 ? 'bg-stone-900/40' : 'bg-stone-900/10'
+                } hover:bg-stone-800/60 transition-colors`}
+              >
+                {row.split('|').map((cell, ci) => (
+                  <td key={ci} className="px-4 py-2 text-stone-300 whitespace-nowrap">
+                    {cell.trim()}
+                  </td>
+                ))}
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>
