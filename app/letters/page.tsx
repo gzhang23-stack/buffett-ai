@@ -410,7 +410,7 @@ function LettersInner() {
           )}
 
           {!loadingText && !textError && fullText && selectedSlug && (
-            <div className="px-6 py-8 w-full">
+            <div className="px-4 py-8 w-full">
               <div className="mb-8">
                 <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
                   合伙人信
@@ -419,7 +419,7 @@ function LettersInner() {
                   {currentTitle}
                 </h1>
               </div>
-              <div className="prose prose-stone prose-invert max-w-none text-[16px] text-stone-300 leading-[1.8]">
+              <div className="text-[16px] text-stone-300 leading-[1.8] w-full">
                 {renderLetterContent(fullText)}
               </div>
             </div>

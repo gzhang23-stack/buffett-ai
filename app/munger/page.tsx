@@ -258,7 +258,7 @@ function MungerInner() {
           )}
 
           {!loading && !error && content && selectedSlug && (
-            <div className="px-6 py-8 w-full">
+            <div className="px-4 py-8 w-full">
               <div className="mb-8">
                 <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
                   芒格之道
@@ -272,7 +272,7 @@ function MungerInner() {
                   <h1 className="text-3xl font-bold text-stone-100 leading-tight">{selectedChapter?.title}</h1>
                 </div>
               </div>
-              <div className="prose prose-stone prose-invert max-w-none text-[16px] text-stone-300 leading-[1.8] whitespace-pre-wrap break-words">
+              <div className="text-[16px] text-stone-300 leading-[1.8] whitespace-pre-wrap break-words w-full">
                 {content}
               </div>
             </div>
