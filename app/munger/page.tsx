@@ -199,7 +199,7 @@ function MungerInner() {
           )}
 
           {!searching && searchResults.length > 0 && (
-            <div className="px-12 py-6 w-full space-y-4">
+            <div className="px-6 py-6 w-full space-y-4">
               <p className="text-xs text-stone-500 mb-4">
                 找到 <span className="text-amber-400 font-medium">{searchResults.length}</span> 条相关内容
               </p>
@@ -258,7 +258,7 @@ function MungerInner() {
           )}
 
           {!loading && !error && content && selectedSlug && (
-            <div className="px-12 py-8 w-full">
+            <div className="px-6 py-8 w-full">
               <div className="mb-8">
                 <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
                   芒格之道
