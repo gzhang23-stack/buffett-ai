@@ -289,9 +289,10 @@ function MungerDaoInner() {
         {articleDetail && (
           <button
             onClick={() => setMobileSidebarOpen(true)}
-            className="md:hidden fixed bottom-6 right-6 z-30 w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-lg flex items-center justify-center transition-all active:scale-95"
+            className="md:hidden fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-xl flex flex-col items-center justify-center transition-all active:scale-95"
           >
-            <Menu className="h-5 w-5" />
+            <BookOpen className="h-5 w-5" />
+            <span className="text-[9px] font-semibold mt-0.5">目录</span>
           </button>
         )}
 
