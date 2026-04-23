@@ -128,7 +128,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
         const paragraphs = remaining.split('\n\n').filter(p => p.trim())
         paragraphs.forEach(para => {
           segments.push(
-            <p key={key++} className="break-words mb-4">
+            <p key={key++} className="break-words mb-6">
               {para.replace(/\n/g, ' ')}
             </p>
           )
@@ -144,7 +144,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
         const paragraphs = before.split('\n\n').filter(p => p.trim())
         paragraphs.forEach(para => {
           segments.push(
-            <p key={key++} className="break-words mb-4">
+            <p key={key++} className="break-words mb-6">
               {para.replace(/\n/g, ' ')}
             </p>
           )
@@ -159,7 +159,7 @@ function renderLetterContent(text: string): React.ReactNode[] {
       const paragraphs = remaining.slice(startIdx).split('\n\n').filter(p => p.trim())
       paragraphs.forEach(para => {
         segments.push(
-          <p key={key++} className="break-words mb-4">
+          <p key={key++} className="break-words mb-6">
             {para.replace(/\n/g, ' ')}
           </p>
         )
@@ -419,16 +419,16 @@ function LettersInner() {
           )}
 
           {!loadingText && !textError && fullText && selectedSlug && (
-            <div className="px-4 py-8 w-full">
-              <div className="mb-8">
-                <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
-                  合伙人信
+            <div className="px-8 py-12 w-full max-w-2xl mx-auto">
+              <div className="mb-12 pb-8 border-b border-stone-800/60">
+                <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-6 tracking-widest uppercase">
+                  {selectedMeta?.type === 'partnership' ? '巴菲特合伙公司' : '伯克希尔·哈撒韦'}
                 </span>
-                <h1 className="text-3xl font-bold text-stone-100 mb-2 leading-tight">
+                <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-3">
                   {currentTitle}
                 </h1>
               </div>
-              <div className="text-[16px] text-stone-300 leading-[1.8] w-full">
+              <div className="text-[17px] text-stone-300 leading-[2.0]">
                 {renderLetterContent(fullText)}
               </div>
             </div>
