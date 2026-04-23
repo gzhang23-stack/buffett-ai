@@ -384,7 +384,7 @@ function MungerDaoInner() {
               <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 flex items-center justify-center mb-4">
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
-              <p className="text-stone-400 font-medium mb-1">点击右下角目录选择文章</p>
+              <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
               <p className="text-stone-600 text-sm">芒格股东会演讲精华，共 25 篇</p>
             </div>
           )}

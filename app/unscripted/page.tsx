@@ -403,7 +403,7 @@ function UnscriptedInner() {
               <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 flex items-center justify-center mb-4">
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
-              <p className="text-stone-400 font-medium mb-1">点击右下角目录选择主题</p>
+              <p className="text-stone-400 font-medium mb-1">点击目录选择主题</p>
               <p className="text-stone-600 text-sm">巴菲特与芒格股东大会问答精华，共 226 篇</p>
             </div>
           )}
