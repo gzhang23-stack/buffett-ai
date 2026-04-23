@@ -17,6 +17,77 @@ interface SearchResult {
   score: number
 }
 
+// ── 内容渲染 ──────────────────────────────────────────────────────────────────
+
+function renderContent(text: string): React.ReactNode[] {
+  // Split on blank lines to get blocks
+  const blocks = text.split(/\n\n+/).map(b => b.trim()).filter(Boolean)
+  const nodes: React.ReactNode[] = []
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]
+    // Merge line breaks within a block into space
+    const inline = block.replace(/\n/g, ' ').trim()
+    if (!inline) continue
+
+    // Detect circled number list items ①②③ embedded in block
+    // These appear as "①text ②text ③text" on separate lines or within a block
+    if (/[①②③④⑤⑥⑦⑧⑨]/.test(inline)) {
+      // Split on circled numbers to extract list items
+      const parts = inline.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
+      const leadText = parts[0].trim()
+      const listItems = parts.slice(1)
+
+      if (listItems.length > 0) {
+        if (leadText) {
+          nodes.push(
+            <p key={`${i}-lead`} className="text-stone-300 leading-[1.9] break-words mb-3">
+              {leadText}
+            </p>
+          )
+        }
+        nodes.push(
+          <div key={`${i}-list`} className="my-3 space-y-2 pl-2 border-l-2 border-amber-500/30">
+            {listItems.map((item, j) => {
+              const bullet = item[0]
+              const body = item.slice(1).trim()
+              return (
+                <div key={j} className="flex gap-3">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] flex items-center justify-center mt-[3px] font-semibold">
+                    {j + 1}
+                  </span>
+                  <p className="text-stone-300 leading-[1.9] break-words flex-1">{body}</p>
+                </div>
+              )
+            })}
+          </div>
+        )
+        continue
+      }
+    }
+
+    // Detect short heading-like lines: short, no trailing period, often bold or standalone
+    const isHeading = inline.length <= 30 && !inline.endsWith('。') && !inline.endsWith('，') && !inline.endsWith('，') && !/^\d/.test(inline)
+    if (isHeading) {
+      nodes.push(
+        <h3 key={i} className="text-[15px] font-semibold text-amber-300/90 mt-6 mb-2 leading-snug">
+          {inline}
+        </h3>
+      )
+      continue
+    }
+
+    // Normal paragraph
+    nodes.push(
+      <p key={i} className="text-stone-300 leading-[1.9] break-words text-indent">
+        {inline}
+      </p>
+    )
+  }
+
+  return nodes
+}
+
 function LenyanInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -237,22 +308,20 @@ function LenyanInner() {
           )}
 
           {!loading && !error && content && selectedSlug && (
-            <div className="px-4 py-8 w-full">
-              <div className="mb-8">
-                <span className="inline-block text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-1 mb-4">
-                  冷眼分享集
+            <div className="px-6 py-10 w-full max-w-3xl">
+              {/* Article header */}
+              <div className="mb-10 pb-6 border-b border-stone-800">
+                <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2.5 py-1 mb-4 tracking-wider uppercase">
+                  冷眼分享集 · 第 {(selectedArticle?.index ?? 0) + 1} 篇
                 </span>
-                <h1 className="text-3xl font-bold text-stone-100 leading-tight mb-2">
+                <h1 className="text-2xl font-bold text-stone-100 leading-tight mb-3">
                   {selectedArticle?.title}
                 </h1>
-                <p className="text-sm text-stone-500">{selectedArticle?.date}</p>
+                <p className="text-xs text-stone-600">{selectedArticle?.date}</p>
               </div>
-              <div className="text-[16px] text-stone-300 leading-[1.8] w-full space-y-4">
-                {content.split('\n\n').filter(p => p.trim()).map((para, i) => (
-                  <p key={i} className="break-words">
-                    {para.replace(/\n/g, ' ')}
-                  </p>
-                ))}
+              {/* Article body */}
+              <div className="text-[16px] space-y-5">
+                {renderContent(content)}
               </div>
             </div>
           )}
