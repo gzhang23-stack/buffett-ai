@@ -50,6 +50,27 @@ function smartMergeLines(rawLines: string[]): string[] {
   return paragraphs
 }
 
+function splitIntoParagraphs(text: string, maxSentences = 3): string[] {
+  if (text.length <= 150) return [text]
+  const paragraphs: string[] = []
+  let buf = ''
+  let sentCount = 0
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
+    buf += ch
+    if ('。！？'.includes(ch)) {
+      sentCount++
+      if (sentCount >= maxSentences) {
+        paragraphs.push(buf.trim())
+        buf = ''
+        sentCount = 0
+      }
+    }
+  }
+  if (buf.trim()) paragraphs.push(buf.trim())
+  return paragraphs.filter(Boolean)
+}
+
 function renderContent(text: string): React.ReactNode[] {
   const rawLines = text.split(/\n/).map(l => l.trim())
   const chunks = smartMergeLines(rawLines)
@@ -99,12 +120,15 @@ function renderContent(text: string): React.ReactNode[] {
       continue
     }
 
-    // Normal paragraph
-    nodes.push(
-      <p key={i} className="text-stone-300 text-[17px] leading-[2.0] mb-6">
-        {chunk}
-      </p>
-    )
+    // Normal paragraph — split long text into ~3-sentence groups
+    const subParas = splitIntoParagraphs(chunk)
+    subParas.forEach((para, j) => {
+      nodes.push(
+        <p key={`${i}-${j}`} className="text-stone-300 text-[17px] leading-[2.0] mb-6">
+          {para}
+        </p>
+      )
+    })
   }
 
   return nodes
