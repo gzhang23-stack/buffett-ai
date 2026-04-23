@@ -185,9 +185,9 @@ function UnscriptedInner() {
         <div className="px-4 py-3 border-b border-stone-800 shrink-0">
           <div className="flex items-center gap-2 text-xs font-semibold text-stone-400 uppercase tracking-wider">
             <BookOpen className="h-3.5 w-3.5 text-amber-400" />
-            巴芒语录
+            巴芒年会精选
           </div>
-          <p className="text-[10px] text-stone-600 mt-1">Buffett &amp; Munger Unscripted</p>
+          <p className="text-[10px] text-stone-600 mt-1">Berkshire Annual Meeting Q&amp;A</p>
         </div>
 
         <div className="flex-1 overflow-y-auto py-1">
