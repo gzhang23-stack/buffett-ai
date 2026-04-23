@@ -203,14 +203,14 @@ function UnscriptedInner() {
                 <div key={part.part_en}>
                   <button
                     onClick={() => togglePart(part.part_en)}
-                    className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+                    className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
                   >
                     {isExpanded
                       ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
                       : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
                     }
                     <span className="flex-1 truncate leading-snug">{part.part_zh}</span>
-                    <span className="text-[11px] text-stone-600">{part.count}</span>
+                    <span className="text-xs text-stone-600">{part.count}</span>
                   </button>
                   {isExpanded && (
                     <div className="bg-stone-900/20">
@@ -220,7 +220,7 @@ function UnscriptedInner() {
                           <button
                             key={article.slug}
                             onClick={() => loadArticle(article.slug)}
-                            className={`w-full text-left flex items-center gap-1 px-5 py-2 text-xs transition-colors ${
+                            className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
                               isSelected
                                 ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
                                 : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'

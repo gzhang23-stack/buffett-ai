@@ -51,7 +51,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] transition-all group ${
+              className={`flex items-center gap-2 px-2.5 py-2.5 rounded-lg text-sm transition-all group ${
                 active
                   ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                   : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800 border border-transparent'
@@ -60,7 +60,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-400' : 'text-stone-500 group-hover:text-stone-300'}`} />
               <span className="flex-1 truncate font-medium">{label}</span>
               {badge && (
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                <span className={`text-[11px] px-1.5 py-0.5 rounded-full shrink-0 ${
                   active ? 'bg-amber-500/20 text-amber-400' : 'bg-stone-800 text-stone-500 border border-stone-700'
                 }`}>
                   {badge}
