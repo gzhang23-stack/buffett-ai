@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Send, BookOpen, Loader2, RotateCcw, ChevronDown, ChevronUp, Plus } from 'lucide-react'
+import { Send, BookOpen, Loader2, RotateCcw, ChevronDown, ChevronUp, Plus, Menu, X } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -286,10 +286,60 @@ function ChatInner() {
 
   const isEmpty = activeConv.messages.length === 0
 
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
   return (
     <div className="flex h-full overflow-hidden">
-      {/* ── Conversation list ── */}
-      <aside className="w-40 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex flex-col overflow-hidden">
+      {/* ── Mobile drawer overlay ── */}
+      {mobileSidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 flex flex-col border-r border-stone-800 bg-[#0a0a0a] transition-transform duration-200 ${
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-800 shrink-0">
+          <div className="flex items-center gap-2 text-sm font-semibold text-stone-300">
+            <BookOpen className="h-4 w-4 text-amber-400" />
+            对话列表
+          </div>
+          <button onClick={() => setMobileSidebarOpen(false)} className="p-1 text-stone-500 hover:text-stone-300">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="px-3 py-3 shrink-0">
+          <button
+            onClick={() => { startNew(); setMobileSidebarOpen(false) }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-500
+                       hover:text-stone-200 hover:bg-stone-800 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            新对话
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-0.5">
+          {conversations.map((conv) => (
+            <button
+              key={conv.id}
+              onClick={() => { setActiveId(conv.id); setMobileSidebarOpen(false) }}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs truncate transition-colors ${
+                conv.id === activeId
+                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                  : 'text-stone-600 hover:text-stone-300 hover:bg-stone-800'
+              }`}
+            >
+              {conv.title}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Desktop conversation list ── */}
+      <aside className="hidden md:flex w-40 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex-col overflow-hidden">
         <div className="px-3 py-3 shrink-0">
           <button
             onClick={startNew}
@@ -318,9 +368,19 @@ function ChatInner() {
       </aside>
 
       {/* ── Chat area ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Floating menu button (mobile only, shown when has messages) */}
+        {activeConv.messages.length > 0 && (
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            className="md:hidden fixed bottom-24 right-6 z-30 w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-lg flex items-center justify-center transition-all active:scale-95"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+
         {/* Header */}
-        <header className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-stone-800 bg-[#0f0f0f]">
+        <header className="shrink-0 flex items-center justify-between px-4 md:px-6 py-3 border-b border-stone-800 bg-[#0f0f0f]">
           <h2 className="text-sm font-medium text-stone-400 truncate">{activeConv.title}</h2>
           {activeConv.messages.length > 0 && (
             <button
@@ -334,7 +394,7 @@ function ChatInner() {
         </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6">
           {isEmpty ? (
             <div className="w-full">
               <div className="text-center mb-10">
@@ -371,7 +431,7 @@ function ChatInner() {
         </div>
 
         {/* Input */}
-        <div className="shrink-0 border-t border-stone-800 bg-[#0f0f0f] px-6 py-4">
+        <div className="shrink-0 border-t border-stone-800 bg-[#0f0f0f] px-4 md:px-6 py-4">
           <div className="w-full">
             <div className="flex items-end gap-3 bg-stone-900/80 border border-stone-700 rounded-2xl px-4 py-2.5
                             focus-within:border-amber-500/50 transition-all">
