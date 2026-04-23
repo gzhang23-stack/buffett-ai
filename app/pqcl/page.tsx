@@ -111,34 +111,24 @@ function SidebarContent({
   const articlesByPart = (part_zh: string) => {
     const allArticles = articles.filter(a => a.part_zh === part_zh)
 
-    // For preface, show all main items
+    // For preface, show all items
     if (part_zh.includes('序言')) {
       return allArticles
     }
 
-    // For chapter 2, show only the main chapter entry
+    // For chapter 2, show all items
     if (part_zh.includes('第二章')) {
-      return allArticles.filter(a => a.title_zh === '芒格的生活、学习和决策方法')
+      return allArticles
     }
 
-    // For chapter 3, show the first entry (represents the whole chapter)
+    // For chapter 3, show all items
     if (part_zh.includes('第三章')) {
-      return allArticles.filter(a => a.title_zh.includes('2001年至2006年'))
+      return allArticles
     }
 
-    // For chapter 4, show the 11 main lectures
+    // For chapter 4, show all items
     if (part_zh.includes('第四章')) {
-      // Map actual titles to lecture numbers for display
-      const lectures = [
-        { match: (t: string) => t.includes('1986') && t.includes('6'), display: '第一讲 在哈佛学校毕业典礼上的演讲' },
-        { match: (t: string) => t.includes('1994') && t.includes('4') && t.includes('南加州'), display: '第二讲 论基本的、普世的智慧' },
-        { match: (t: string) => t.includes('1996') && t.includes('斯坦福'), display: '第三讲 论基本的、普世的智慧（修正稿）' },
-        { match: (t: string) => t === '人类误判心理学', display: '第十一讲 人类误判心理学' },
-      ]
-
-      return allArticles.filter(a =>
-        lectures.some(lec => lec.match(a.title_zh))
-      )
+      return allArticles
     }
 
     return allArticles
