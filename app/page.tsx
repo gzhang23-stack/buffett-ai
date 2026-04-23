@@ -43,16 +43,40 @@ const PEOPLE = [
     years: '1978–2023',
   },
   {
-    name: '格雷格·阿贝尔',
-    title: '伯克希尔·哈撒韦 接班人',
-    desc: '负责管理伯克希尔非保险业务，被巴菲特钦点为继承人。',
-    years: '2018–至今',
-  },
-  {
     name: '本杰明·格雷厄姆',
     title: '价值投资之父',
     desc: '《证券分析》与《聪明的投资者》作者，巴菲特的导师与精神源泉。',
     years: '1894–1976',
+  },
+  {
+    name: '菲利普·费雪',
+    title: '成长股投资先驱',
+    desc: '"闲聊法"创始人，影响巴菲特从廉价股转向优质企业投资。',
+    years: '1907–2004',
+  },
+  {
+    name: '彼得·林奇',
+    title: '富达麦哲伦基金经理',
+    desc: '13年年化29%，"买你了解的"投资哲学践行者。',
+    years: '1977–1990',
+  },
+  {
+    name: '霍华德·马克斯',
+    title: '橡树资本联合创始人',
+    desc: '周期理论与第二层思维的提出者，巴菲特力荐的当代投资大师。',
+    years: '1995–至今',
+  },
+  {
+    name: '段永平',
+    title: '步步高/OPPO 创始人',
+    desc: '中国最知名的巴菲特信徒，长期持有优质消费科技企业。',
+    years: '2006–至今',
+  },
+  {
+    name: '冷眼（冯时能）',
+    title: '马来西亚股坛宗师',
+    desc: '30年实战著成《30年股票投资心得》，华语价值投资第一人。',
+    years: '1973–至今',
   },
 ]
 
@@ -244,7 +268,7 @@ export default function HomePage() {
               查看全部 <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {PEOPLE.map((person) => (
               <Link
                 key={person.name}
