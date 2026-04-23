@@ -110,13 +110,13 @@ export default function HomePage() {
         <section className="space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium">
             <BookOpen className="h-3.5 w-3.5" />
-            巴菲特致股东信知识库
+            价值投资知识库
           </div>
           <h1 className="text-4xl font-bold text-stone-100 leading-tight">
-            探索<span className="text-amber-400">巴菲特</span>半个世纪<br />的投资智慧
+            探索<span className="text-amber-400">价值投资</span>大师们的<br />投资智慧
           </h1>
           <p className="text-stone-400 text-lg max-w-2xl leading-relaxed">
-            收录沃伦·巴菲特 1956 年至 2024 年致合伙人及伯克希尔·哈撒韦股东的全部信件（中文版）。
+            收录巴菲特、芒格、格雷厄姆等价值投资大师的经典著作与智慧精华。
             通过 AI 问答、原文浏览、概念速查，深入理解价值投资的核心理念。
           </p>
 
@@ -169,11 +169,11 @@ export default function HomePage() {
         <section className="relative rounded-2xl border border-amber-500/20 bg-amber-500/5 overflow-hidden p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="flex-1 space-y-2">
-              <div className="text-xs text-amber-500 font-medium uppercase tracking-wider">巴菲特下午茶</div>
-              <h3 className="text-xl font-semibold text-stone-100">向巴菲特的信件提问</h3>
+              <div className="text-xs text-amber-500 font-medium uppercase tracking-wider">AI 智能问答</div>
+              <h3 className="text-xl font-semibold text-stone-100">向价值投资大师提问</h3>
               <p className="text-sm text-stone-400 leading-relaxed max-w-lg">
-                AI 助手基于原始信件即时检索相关段落，用巴菲特自己的话回答你的问题。
-                支持多轮对话，所有回答均标注信件来源年份。
+                AI 助手基于原始文献即时检索相关段落，用大师自己的话回答你的问题。
+                支持多轮对话，所有回答均标注文献来源。
               </p>
             </div>
             <Link

@@ -5,8 +5,8 @@ import Sidebar from '@/components/Sidebar'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: '巴菲特致股东信知识库',
-  description: '基于 DeepSeek AI，探索沃伦·巴菲特 1977–2024 年致伯克希尔·哈撒韦股东信中的投资智慧',
+  title: '价值投资知识库',
+  description: '基于 AI，深入探索价值投资的核心理念——巴菲特、芒格、格雷厄姆等大师的投资智慧',
 }
 
 export default function RootLayout({

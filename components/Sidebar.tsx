@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, MessageSquare, Search, FileText, Lightbulb, Building2, Users, TrendingUp, Menu, X, BookMarked } from 'lucide-react'
+import { BookOpen, MessageSquare, Search, FileText, Lightbulb, Building2, Users, TrendingUp, Menu, X, BookMarked, Mic } from 'lucide-react'
 import { useState } from 'react'
 
 const NAV_ITEMS = [
   { href: '/', label: '首页总览', icon: TrendingUp },
   { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/lenyan', label: '冷眼分享集', icon: BookMarked, badge: '91' },
+  { href: '/unscripted', label: '巴芒语录', icon: Mic, badge: '226' },
   { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
   { href: '/companies', label: '关联公司', icon: Building2, badge: '12' },
@@ -75,7 +76,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
       {/* Footer */}
       <div className="px-4 py-3 border-t border-stone-800">
         <p className="text-[10px] text-stone-600">由 DeepSeek AI 驱动</p>
-        <p className="text-[10px] text-stone-700 mt-0.5">数据覆盖 1956–2024 年</p>
+        <p className="text-[10px] text-stone-700 mt-0.5">价值投资知识库</p>
       </div>
     </>
   )
@@ -98,7 +99,7 @@ export default function Sidebar() {
           <div className="w-6 h-6 rounded-md bg-amber-500 flex items-center justify-center shrink-0">
             <BookOpen className="h-3.5 w-3.5 text-stone-900" />
           </div>
-          <span className="text-sm font-semibold text-stone-100">巴菲特知识库</span>
+          <span className="text-sm font-semibold text-stone-100">价值投资知识库</span>
         </Link>
       </div>
 
@@ -121,8 +122,8 @@ export default function Sidebar() {
               <BookOpen className="h-4 w-4 text-stone-900" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-stone-100">巴菲特知识库</div>
-              <div className="text-[10px] text-stone-500">1956 – 2024</div>
+              <div className="text-sm font-semibold text-stone-100">价值投资知识库</div>
+              <div className="text-[10px] text-stone-500">价值投资知识库</div>
             </div>
           </Link>
           <button
@@ -147,9 +148,9 @@ export default function Sidebar() {
           </div>
           <div className="leading-tight">
             <div className="text-sm font-semibold text-stone-100 group-hover:text-amber-400 transition-colors">
-              巴菲特知识库
+              价值投资知识库
             </div>
-            <div className="text-[10px] text-stone-500">1956 – 2024</div>
+            <div className="text-[10px] text-stone-500">Value Investing</div>
           </div>
         </Link>
         <NavContent />
