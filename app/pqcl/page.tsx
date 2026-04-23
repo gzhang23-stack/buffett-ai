@@ -108,11 +108,29 @@ function SidebarContent({
   loadArticle: (slug: string) => void
   onClose?: () => void
 }) {
-  const articlesByPart = (part_zh: string) => articles.filter(a => a.part_zh === part_zh)
+  const articlesByPart = (part_zh: string) => {
+    const allArticles = articles.filter(a => a.part_zh === part_zh)
+
+    // For chapters 3 and 4, filter to show only major entries
+    if (part_zh.includes('第三章') || part_zh.includes('第四章')) {
+      return allArticles.filter(a => {
+        const title = a.title_zh
+        // Skip sub-items that are clearly nested content
+        if (title.match(/^[一二三四五六七八九十]+\s/)) return false // "一 奖励和惩罚"
+        if (title.match(/^十[一二三四五六七八九十]+\s/)) return false // "十一 ..."
+        if (title.match(/^二十/)) return false
+        if (title.startsWith('（') && title.endsWith('）')) return false // "(插文)"
+        if (title.startsWith('重读')) return false // "重读第一讲"
+        if (title.length < 8 && !title.includes('年')) return false // Very short titles
+        return true
+      })
+    }
+
+    return allArticles
+  }
 
   // Simplify part display name
   const getPartDisplayName = (part_zh: string) => {
-    // "第二章：芒格的生活、学习和决策方法" -> "第二章"
     const match = part_zh.match(/^(第[一二三四五六七八九十]+章|序言与导读)/)
     return match ? match[1] : part_zh
   }
@@ -141,7 +159,7 @@ function SidebarContent({
                   : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
                 }
                 <span className="flex-1 leading-snug">{displayName}</span>
-                <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
+                <span className="text-xs text-stone-600 shrink-0">{partArticles.length}</span>
               </button>
               {isExpanded && (
                 <div className="bg-stone-900/20">
