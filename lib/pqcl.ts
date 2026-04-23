@@ -25,11 +25,19 @@ export function getAllPqclArticles(): PqclArticle[] {
 
 export function getPqclParts(): { part_zh: string; count: number }[] {
   const articles = loadArticles()
-  const map = new Map<string, number>()
+  const seen = new Set<string>()
+  const parts: { part_zh: string; count: number }[] = []
+
+  // Preserve original order by iterating through articles
   for (const a of articles) {
-    map.set(a.part_zh, (map.get(a.part_zh) ?? 0) + 1)
+    if (!seen.has(a.part_zh)) {
+      seen.add(a.part_zh)
+      const count = articles.filter(art => art.part_zh === a.part_zh).length
+      parts.push({ part_zh: a.part_zh, count })
+    }
   }
-  return Array.from(map.entries()).map(([part_zh, count]) => ({ part_zh, count }))
+
+  return parts
 }
 
 export function getPqclBySlug(slug: string): PqclArticle | null {
