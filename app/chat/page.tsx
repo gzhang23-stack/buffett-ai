@@ -369,16 +369,14 @@ function ChatInner() {
 
       {/* ── Chat area ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Floating menu button (mobile only, shown when has messages) */}
-        {activeConv.messages.length > 0 && (
-          <button
-            onClick={() => setMobileSidebarOpen(true)}
-            className="md:hidden fixed bottom-24 right-6 z-30 w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-xl flex flex-col items-center justify-center transition-all active:scale-95"
-          >
-            <RotateCcw className="h-5 w-5" />
-            <span className="text-[9px] font-semibold mt-0.5">对话</span>
-          </button>
-        )}
+        {/* Floating menu button (mobile only, always shown) */}
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="md:hidden fixed bottom-24 right-6 z-30 w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-xl flex flex-col items-center justify-center transition-all active:scale-95"
+        >
+          <RotateCcw className="h-5 w-5" />
+          <span className="text-[9px] font-semibold mt-0.5">对话</span>
+        </button>
 
         {/* Header */}
         <header className="shrink-0 flex items-center justify-between px-4 md:px-6 py-3 border-b border-stone-800 bg-[#0f0f0f]">

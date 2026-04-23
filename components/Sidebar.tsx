@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/unscripted', label: '巴芒年会精选', icon: Mic, badge: '226' },
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
+  { href: '/pqcl', label: '穷查理宝典', icon: BookOpen, badge: '224' },
   { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
   { href: '/people', label: '关键人物', icon: Users, badge: '15' },
