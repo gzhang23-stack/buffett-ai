@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { BookOpen, Search, ChevronRight, X, Loader2, AlertTriangle, ChevronDown, ChevronRight as ChevronRightIcon } from 'lucide-react'
+import { BookOpen, Search, X, Loader2, AlertTriangle, ChevronDown, ChevronRight as ChevronRightIcon, Menu } from 'lucide-react'
 
 interface ArticleMeta {
   slug: string
@@ -38,19 +38,17 @@ interface SearchResult {
 
 function ArticleContent({ article }: { article: ArticleFull }) {
   return (
-    <div className="px-8 py-12 w-full max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-12 pb-8 border-b border-stone-800/60">
+    <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
+      <div className="mb-8 md:mb-12 pb-6 md:pb-8 border-b border-stone-800/60">
         <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-4 tracking-widest uppercase">
           {article.part_zh}
         </span>
-        <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-2">
+        <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug mb-2">
           {article.title_zh}
         </h1>
         <p className="text-sm text-stone-500 italic">{article.title_en}</p>
       </div>
 
-      {/* Entries (grouped by meeting) */}
       <div className="space-y-10">
         {article.entries.map((entry, i) => (
           <div key={i}>
@@ -63,7 +61,6 @@ function ArticleContent({ article }: { article: ArticleFull }) {
             )}
             <div className="space-y-5">
               {entry.lines.map((line, j) => {
-                // Detect speaker prefix: WB: / CM: / Warren Buffett: / Charlie Munger:
                 const speakerMatch = line.match(/^((?:Warren Buffett|Charlie Munger|WB|CM|巴菲特|芒格)[：:]\s*)(.*)/)
                 if (speakerMatch) {
                   const speaker = speakerMatch[1].replace(/[：:].*/, '').trim()
@@ -78,12 +75,12 @@ function ArticleContent({ article }: { article: ArticleFull }) {
                       }`}>
                         {isBuffett ? '巴' : '芒'}
                       </span>
-                      <p className="text-stone-300 text-[17px] leading-[2.0] flex-1">{body}</p>
+                      <p className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] flex-1">{body}</p>
                     </div>
                   )
                 }
                 return (
-                  <p key={j} className="text-stone-300 text-[17px] leading-[2.0]">
+                  <p key={j} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
                     {line}
                   </p>
                 )
@@ -92,6 +89,80 @@ function ArticleContent({ article }: { article: ArticleFull }) {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+// ── Sidebar content ──────────────────────────────────────────────────────────
+
+function SidebarContent({
+  sidebarLoading,
+  parts,
+  articles,
+  expandedParts,
+  togglePart,
+  selectedSlug,
+  loadArticle,
+  onClose,
+}: {
+  sidebarLoading: boolean
+  parts: Part[]
+  articles: ArticleMeta[]
+  expandedParts: Set<string>
+  togglePart: (part_en: string) => void
+  selectedSlug: string | null
+  loadArticle: (slug: string) => void
+  onClose?: () => void
+}) {
+  const articlesByPart = (part_en: string) => articles.filter(a => a.part_en === part_en)
+
+  return (
+    <div className="flex-1 overflow-y-auto py-1">
+      {sidebarLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
+        </div>
+      ) : (
+        parts.map(part => {
+          const isExpanded = expandedParts.has(part.part_en)
+          const partArticles = articlesByPart(part.part_en)
+          return (
+            <div key={part.part_en}>
+              <button
+                onClick={() => togglePart(part.part_en)}
+                className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+              >
+                {isExpanded
+                  ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
+                  : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
+                }
+                <span className="flex-1 truncate leading-snug">{part.part_zh}</span>
+                <span className="text-xs text-stone-600">{part.count}</span>
+              </button>
+              {isExpanded && (
+                <div className="bg-stone-900/20">
+                  {partArticles.map(article => {
+                    const isSelected = selectedSlug === article.slug
+                    return (
+                      <button
+                        key={article.slug}
+                        onClick={() => { loadArticle(article.slug); onClose?.() }}
+                        className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
+                          isSelected
+                            ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
+                            : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
+                        }`}
+                      >
+                        <span className="leading-snug text-left">{article.title_zh}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })
+      )}
     </div>
   )
 }
@@ -114,8 +185,8 @@ function UnscriptedInner() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [sidebarLoading, setSidebarLoading] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  // Load parts and all articles
   useEffect(() => {
     Promise.all([
       fetch('/api/unscripted?parts=1').then(r => r.json()),
@@ -176,12 +247,43 @@ function UnscriptedInner() {
     }
   }
 
-  const articlesByPart = (part_en: string) => articles.filter(a => a.part_en === part_en)
-
   return (
     <div className="flex h-full overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-52 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex flex-col overflow-hidden">
+      {/* ── Mobile drawer overlay ── */}
+      {mobileSidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 flex flex-col border-r border-stone-800 bg-[#0a0a0a] transition-transform duration-200 ${
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-stone-800 shrink-0">
+          <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
+            <BookOpen className="h-4 w-4 text-amber-400" />
+            巴芒年会精选
+          </div>
+          <button onClick={() => setMobileSidebarOpen(false)} className="p-1 text-stone-500 hover:text-stone-300">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <SidebarContent
+          sidebarLoading={sidebarLoading}
+          parts={parts}
+          articles={articles}
+          expandedParts={expandedParts}
+          togglePart={togglePart}
+          selectedSlug={selectedSlug}
+          loadArticle={loadArticle}
+          onClose={() => setMobileSidebarOpen(false)}
+        />
+      </div>
+
+      {/* ── Desktop sidebar ── */}
+      <aside className="hidden md:flex w-52 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex-col overflow-hidden">
         <div className="px-4 py-3.5 border-b border-stone-800 shrink-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
             <BookOpen className="h-4 w-4 text-amber-400" />
@@ -189,60 +291,21 @@ function UnscriptedInner() {
           </div>
           <p className="text-xs text-stone-600 mt-1">Berkshire Annual Meeting Q&amp;A</p>
         </div>
-
-        <div className="flex-1 overflow-y-auto py-1">
-          {sidebarLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
-            </div>
-          ) : (
-            parts.map(part => {
-              const isExpanded = expandedParts.has(part.part_en)
-              const partArticles = articlesByPart(part.part_en)
-              return (
-                <div key={part.part_en}>
-                  <button
-                    onClick={() => togglePart(part.part_en)}
-                    className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
-                  >
-                    {isExpanded
-                      ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
-                      : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
-                    }
-                    <span className="flex-1 truncate leading-snug">{part.part_zh}</span>
-                    <span className="text-xs text-stone-600">{part.count}</span>
-                  </button>
-                  {isExpanded && (
-                    <div className="bg-stone-900/20">
-                      {partArticles.map(article => {
-                        const isSelected = selectedSlug === article.slug
-                        return (
-                          <button
-                            key={article.slug}
-                            onClick={() => loadArticle(article.slug)}
-                            className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
-                              isSelected
-                                ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
-                                : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
-                            }`}
-                          >
-                            <span className="leading-snug text-left">{article.title_zh}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )
-            })
-          )}
-        </div>
+        <SidebarContent
+          sidebarLoading={sidebarLoading}
+          parts={parts}
+          articles={articles}
+          expandedParts={expandedParts}
+          togglePart={togglePart}
+          selectedSlug={selectedSlug}
+          loadArticle={loadArticle}
+        />
       </aside>
 
-      {/* Main */}
+      {/* ── Main ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Search bar */}
-        <div className="shrink-0 px-4 py-3 border-b border-stone-800 bg-[#0f0f0f]">
+        <div className="shrink-0 px-3 md:px-4 py-3 border-b border-stone-800 bg-[#0f0f0f]">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -251,6 +314,13 @@ function UnscriptedInner() {
             }}
             className="flex items-center gap-2 w-full"
           >
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden p-2 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800 shrink-0"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />
               <input
@@ -266,7 +336,7 @@ function UnscriptedInner() {
                 </button>
               )}
             </div>
-            <button type="submit" className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-900 font-medium text-sm transition-colors">
+            <button type="submit" className="px-3 md:px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-900 font-medium text-sm transition-colors shrink-0">
               搜索
             </button>
           </form>
@@ -297,10 +367,7 @@ function UnscriptedInner() {
                   </div>
                   <div className="px-4 py-3">
                     <p className="text-sm text-stone-400 leading-relaxed text-[13px]">{hit.excerpt}</p>
-                    <button
-                      onClick={() => loadArticle(hit.article.slug)}
-                      className="mt-2 text-xs text-amber-500 hover:text-amber-300 transition-colors"
-                    >
+                    <button onClick={() => loadArticle(hit.article.slug)} className="mt-2 text-xs text-amber-500 hover:text-amber-300 transition-colors">
                       阅读全文 →
                     </button>
                   </div>
@@ -334,7 +401,7 @@ function UnscriptedInner() {
               <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 flex items-center justify-center mb-4">
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
-              <p className="text-stone-400 font-medium mb-1">从左侧选择主题阅读</p>
+              <p className="text-stone-400 font-medium mb-1">点击左上角目录选择主题</p>
               <p className="text-stone-600 text-sm">巴菲特与芒格股东大会问答精华，共 226 篇</p>
             </div>
           )}
