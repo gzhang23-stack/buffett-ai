@@ -111,25 +111,41 @@ function SidebarContent({
   const articlesByPart = (part_zh: string) => {
     const allArticles = articles.filter(a => a.part_zh === part_zh)
 
-    // For chapter 4, only show major speeches
-    if (part_zh.includes('第四章')) {
+    // Whitelist based on the official table of contents
+    if (part_zh.includes('序言')) {
       return allArticles.filter(a => {
-        const title = a.title_zh
-        // Keep only major speech titles with dates or key topics
-        if (title.includes('年') && title.includes('月')) return true // "1986年6月13日"
-        if (title.includes('斯坦福') || title.includes('南加州')) return true
-        if (title === '人类误判心理学') return true
-        return false
+        const t = a.title_zh
+        // Keep all items in preface section
+        return !t.startsWith('（插文）')
       })
     }
 
-    // For chapter 3, filter out sub-items
+    if (part_zh.includes('第二章')) {
+      return allArticles.filter(a => {
+        const t = a.title_zh
+        // Only keep the main chapter title
+        return t === '芒格的生活、学习和决策方法'
+      })
+    }
+
     if (part_zh.includes('第三章')) {
       return allArticles.filter(a => {
-        const title = a.title_zh
-        if (title.startsWith('（') && title.endsWith('）')) return false
-        if (title.length < 6) return false
-        return true
+        const t = a.title_zh
+        // Only keep the main chapter title
+        return t.includes('芒格主义') && !t.startsWith('（')
+      })
+    }
+
+    if (part_zh.includes('第四章')) {
+      return allArticles.filter(a => {
+        const t = a.title_zh
+        // Keep only the 11 main lectures based on dates/venues
+        if (t.includes('1986') && t.includes('6')) return true // 第一讲
+        if (t.includes('1994') && t.includes('4')) return true // 第二讲
+        if (t.includes('1996') && t.includes('斯坦福')) return true // 第三讲
+        if (t === '人类误判心理学') return true // 第十一讲
+        // Add other lectures if they exist with clear identifiers
+        return false
       })
     }
 
