@@ -111,42 +111,34 @@ function SidebarContent({
   const articlesByPart = (part_zh: string) => {
     const allArticles = articles.filter(a => a.part_zh === part_zh)
 
-    // Whitelist based on the official table of contents
+    // For preface, show all main items
     if (part_zh.includes('序言')) {
-      return allArticles.filter(a => {
-        const t = a.title_zh
-        // Keep all items in preface section
-        return !t.startsWith('（插文）')
-      })
+      return allArticles
     }
 
+    // For chapter 2, show only the main chapter entry
     if (part_zh.includes('第二章')) {
-      return allArticles.filter(a => {
-        const t = a.title_zh
-        // Only keep the main chapter title
-        return t === '芒格的生活、学习和决策方法'
-      })
+      return allArticles.filter(a => a.title_zh === '芒格的生活、学习和决策方法')
     }
 
+    // For chapter 3, show the first entry (represents the whole chapter)
     if (part_zh.includes('第三章')) {
-      return allArticles.filter(a => {
-        const t = a.title_zh
-        // Only keep the main chapter title
-        return t.includes('芒格主义') && !t.startsWith('（')
-      })
+      return allArticles.filter(a => a.title_zh.includes('2001年至2006年'))
     }
 
+    // For chapter 4, show the 11 main lectures
     if (part_zh.includes('第四章')) {
-      return allArticles.filter(a => {
-        const t = a.title_zh
-        // Keep only the 11 main lectures based on dates/venues
-        if (t.includes('1986') && t.includes('6')) return true // 第一讲
-        if (t.includes('1994') && t.includes('4')) return true // 第二讲
-        if (t.includes('1996') && t.includes('斯坦福')) return true // 第三讲
-        if (t === '人类误判心理学') return true // 第十一讲
-        // Add other lectures if they exist with clear identifiers
-        return false
-      })
+      // Map actual titles to lecture numbers for display
+      const lectures = [
+        { match: (t: string) => t.includes('1986') && t.includes('6'), display: '第一讲 在哈佛学校毕业典礼上的演讲' },
+        { match: (t: string) => t.includes('1994') && t.includes('4') && t.includes('南加州'), display: '第二讲 论基本的、普世的智慧' },
+        { match: (t: string) => t.includes('1996') && t.includes('斯坦福'), display: '第三讲 论基本的、普世的智慧（修正稿）' },
+        { match: (t: string) => t === '人类误判心理学', display: '第十一讲 人类误判心理学' },
+      ]
+
+      return allArticles.filter(a =>
+        lectures.some(lec => lec.match(a.title_zh))
+      )
     }
 
     return allArticles
