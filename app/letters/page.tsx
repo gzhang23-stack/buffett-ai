@@ -444,7 +444,7 @@ function LettersInner() {
               <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 flex items-center justify-center mb-4">
                 <FileText className="h-8 w-8 text-stone-600" />
               </div>
-              <p className="text-stone-400 font-medium mb-1">点击左上角目录选择信件</p>
+              <p className="text-stone-400 font-medium mb-1">点击右下角目录选择信件</p>
               <p className="text-stone-600 text-sm">涵盖 1956–2024 年，中文版本</p>
             </div>
           )}
