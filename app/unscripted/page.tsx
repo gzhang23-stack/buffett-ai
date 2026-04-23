@@ -303,7 +303,17 @@ function UnscriptedInner() {
       </aside>
 
       {/* ── Main ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Floating menu button (mobile only, shown when reading content) */}
+        {articleDetail && (
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            className="md:hidden fixed bottom-6 right-6 z-30 w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-900 shadow-lg flex items-center justify-center transition-all active:scale-95"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+
         {/* Search bar */}
         <div className="shrink-0 px-3 md:px-4 py-3 border-b border-stone-800 bg-[#0f0f0f]">
           <form
@@ -314,13 +324,6 @@ function UnscriptedInner() {
             }}
             className="flex items-center gap-2 w-full"
           >
-            <button
-              type="button"
-              onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden p-2 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800 shrink-0"
-            >
-              <Menu className="h-4 w-4" />
-            </button>
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />
               <input
