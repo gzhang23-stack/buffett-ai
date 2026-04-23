@@ -182,12 +182,12 @@ function UnscriptedInner() {
     <div className="flex h-full overflow-hidden">
       {/* Sidebar */}
       <aside className="w-52 shrink-0 border-r border-stone-800 bg-[#0a0a0a] flex flex-col overflow-hidden">
-        <div className="px-4 py-3 border-b border-stone-800 shrink-0">
-          <div className="flex items-center gap-2 text-xs font-semibold text-stone-400 uppercase tracking-wider">
-            <BookOpen className="h-3.5 w-3.5 text-amber-400" />
+        <div className="px-4 py-3.5 border-b border-stone-800 shrink-0">
+          <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
+            <BookOpen className="h-4 w-4 text-amber-400" />
             巴芒年会精选
           </div>
-          <p className="text-[10px] text-stone-600 mt-1">Berkshire Annual Meeting Q&amp;A</p>
+          <p className="text-xs text-stone-600 mt-1">Berkshire Annual Meeting Q&amp;A</p>
         </div>
 
         <div className="flex-1 overflow-y-auto py-1">
@@ -203,14 +203,14 @@ function UnscriptedInner() {
                 <div key={part.part_en}>
                   <button
                     onClick={() => togglePart(part.part_en)}
-                    className="w-full text-left flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold text-stone-500 hover:text-stone-300 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+                    className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
                   >
                     {isExpanded
-                      ? <ChevronDown className="h-3 w-3 shrink-0 text-amber-500/60" />
-                      : <ChevronRightIcon className="h-3 w-3 shrink-0 text-stone-600" />
+                      ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
+                      : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
                     }
                     <span className="flex-1 truncate leading-snug">{part.part_zh}</span>
-                    <span className="text-[10px] text-stone-700">{part.count}</span>
+                    <span className="text-[11px] text-stone-600">{part.count}</span>
                   </button>
                   {isExpanded && (
                     <div className="bg-stone-900/20">
@@ -220,10 +220,10 @@ function UnscriptedInner() {
                           <button
                             key={article.slug}
                             onClick={() => loadArticle(article.slug)}
-                            className={`w-full text-left flex items-center gap-1 px-5 py-1.5 text-[11px] transition-colors ${
+                            className={`w-full text-left flex items-center gap-1 px-5 py-2 text-xs transition-colors ${
                               isSelected
                                 ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
-                                : 'text-stone-500 hover:text-stone-300 hover:bg-stone-800/60'
+                                : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
                             }`}
                           >
                             <span className="truncate leading-snug">{article.title_zh}</span>

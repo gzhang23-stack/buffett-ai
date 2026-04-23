@@ -29,21 +29,21 @@ function NavContent({ onClose }: { onClose?: () => void }) {
   return (
     <>
       {/* Search */}
-      <form onSubmit={handleSearch} className="px-3 pt-3">
-        <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
-          <Search className="h-3.5 w-3.5 text-stone-500 shrink-0" />
+      <form onSubmit={handleSearch} className="px-3 pt-4">
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
+          <Search className="h-4 w-4 text-stone-500 shrink-0" />
           <input
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="搜索信件内容…"
-            className="flex-1 bg-transparent text-xs text-stone-300 placeholder:text-stone-600 outline-none min-w-0"
+            className="flex-1 bg-transparent text-sm text-stone-300 placeholder:text-stone-600 outline-none min-w-0"
           />
         </div>
       </form>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon, badge }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))
           return (
@@ -51,17 +51,17 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-all group ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] transition-all group ${
                 active
                   ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                  : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800 border border-transparent'
+                  : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800 border border-transparent'
               }`}
             >
-              <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-amber-400' : 'text-stone-600 group-hover:text-stone-400'}`} />
-              <span className="flex-1 truncate">{label}</span>
+              <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-400' : 'text-stone-500 group-hover:text-stone-300'}`} />
+              <span className="flex-1 truncate font-medium">{label}</span>
               {badge && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                  active ? 'bg-amber-500/20 text-amber-400' : 'bg-stone-800 text-stone-600 border border-stone-700'
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  active ? 'bg-amber-500/20 text-amber-400' : 'bg-stone-800 text-stone-500 border border-stone-700'
                 }`}>
                   {badge}
                 </span>
@@ -73,8 +73,8 @@ function NavContent({ onClose }: { onClose?: () => void }) {
 
       {/* Footer */}
       <div className="px-4 py-3 border-t border-stone-800">
-        <p className="text-[10px] text-stone-600">由 DeepSeek AI 驱动</p>
-        <p className="text-[10px] text-stone-700 mt-0.5">价值投资知识库</p>
+        <p className="text-xs text-stone-600">由 DeepSeek AI 驱动</p>
+        <p className="text-xs text-stone-700 mt-0.5">价值投资知识库</p>
       </div>
     </>
   )
