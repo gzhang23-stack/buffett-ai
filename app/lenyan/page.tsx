@@ -20,67 +20,74 @@ interface SearchResult {
 // ── 内容渲染 ──────────────────────────────────────────────────────────────────
 
 function renderContent(text: string): React.ReactNode[] {
-  // Split on blank lines to get blocks
-  const blocks = text.split(/\n\n+/).map(b => b.trim()).filter(Boolean)
+  // Each line is a semantic chunk — merge adjacent content lines into paragraphs,
+  // treat blank lines as paragraph separators.
+  const rawLines = text.split(/\n/).map(l => l.trim())
   const nodes: React.ReactNode[] = []
 
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i]
-    // Merge line breaks within a block into space
-    const inline = block.replace(/\n/g, ' ').trim()
-    if (!inline) continue
+  // Group consecutive non-empty lines into paragraph chunks
+  const chunks: string[] = []
+  let current: string[] = []
+  for (const line of rawLines) {
+    if (line === '') {
+      if (current.length > 0) {
+        chunks.push(current.join(''))
+        current = []
+      }
+    } else {
+      current.push(line)
+    }
+  }
+  if (current.length > 0) chunks.push(current.join(''))
 
-    // Detect circled number list items ①②③ embedded in block
-    // These appear as "①text ②text ③text" on separate lines or within a block
-    if (/[①②③④⑤⑥⑦⑧⑨]/.test(inline)) {
-      // Split on circled numbers to extract list items
-      const parts = inline.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i]
+    if (!chunk) continue
+
+    // Circled number lists ①②③
+    if (/[①②③④⑤⑥⑦⑧⑨]/.test(chunk)) {
+      const parts = chunk.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
       const leadText = parts[0].trim()
       const listItems = parts.slice(1)
-
       if (listItems.length > 0) {
         if (leadText) {
           nodes.push(
-            <p key={`${i}-lead`} className="text-stone-300 leading-[1.9] break-words mb-3">
+            <p key={`${i}-lead`} className="text-stone-300 text-[17px] leading-[2.0] mb-5">
               {leadText}
             </p>
           )
         }
         nodes.push(
-          <div key={`${i}-list`} className="my-3 space-y-2 pl-2 border-l-2 border-amber-500/30">
-            {listItems.map((item, j) => {
-              const bullet = item[0]
-              const body = item.slice(1).trim()
-              return (
-                <div key={j} className="flex gap-3">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] flex items-center justify-center mt-[3px] font-semibold">
-                    {j + 1}
-                  </span>
-                  <p className="text-stone-300 leading-[1.9] break-words flex-1">{body}</p>
-                </div>
-              )
-            })}
+          <div key={`${i}-list`} className="my-5 space-y-3 pl-3 border-l-2 border-amber-500/30">
+            {listItems.map((item, j) => (
+              <div key={j} className="flex gap-3">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] flex items-center justify-center mt-[4px] font-semibold">
+                  {j + 1}
+                </span>
+                <p className="text-stone-300 text-[17px] leading-[2.0] flex-1">{item.slice(1).trim()}</p>
+              </div>
+            ))}
           </div>
         )
         continue
       }
     }
 
-    // Detect short heading-like lines: short, no trailing period, often bold or standalone
-    const isHeading = inline.length <= 30 && !inline.endsWith('。') && !inline.endsWith('，') && !inline.endsWith('，') && !/^\d/.test(inline)
+    // Short heading: ≤20 chars, no sentence-ending punctuation, no digit start
+    const isHeading = chunk.length <= 20 && !chunk.endsWith('。') && !chunk.endsWith('，') && !chunk.endsWith('、') && !/^\d/.test(chunk)
     if (isHeading) {
       nodes.push(
-        <h3 key={i} className="text-[15px] font-semibold text-amber-300/90 mt-6 mb-2 leading-snug">
-          {inline}
+        <h3 key={i} className="text-[15px] font-semibold text-amber-300/90 mt-10 mb-4 leading-snug tracking-wide">
+          {chunk}
         </h3>
       )
       continue
     }
 
-    // Normal paragraph
+    // Normal paragraph — no indent, rely on spacing for separation
     nodes.push(
-      <p key={i} className="text-stone-300 leading-[1.9] break-words text-indent">
-        {inline}
+      <p key={i} className="text-stone-300 text-[17px] leading-[2.0] mb-6">
+        {chunk}
       </p>
     )
   }
@@ -308,19 +315,19 @@ function LenyanInner() {
           )}
 
           {!loading && !error && content && selectedSlug && (
-            <div className="px-6 py-10 w-full max-w-3xl">
+            <div className="px-8 py-12 w-full max-w-2xl mx-auto">
               {/* Article header */}
-              <div className="mb-10 pb-6 border-b border-stone-800">
-                <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2.5 py-1 mb-4 tracking-wider uppercase">
+              <div className="mb-12 pb-8 border-b border-stone-800/60">
+                <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-6 tracking-widest uppercase">
                   冷眼分享集 · 第 {(selectedArticle?.index ?? 0) + 1} 篇
                 </span>
-                <h1 className="text-2xl font-bold text-stone-100 leading-tight mb-3">
+                <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-4">
                   {selectedArticle?.title}
                 </h1>
-                <p className="text-xs text-stone-600">{selectedArticle?.date}</p>
+                <p className="text-[13px] text-stone-600 tracking-wide">{selectedArticle?.date}</p>
               </div>
               {/* Article body */}
-              <div className="text-[16px] space-y-5">
+              <div>
                 {renderContent(content)}
               </div>
             </div>
