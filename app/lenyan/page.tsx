@@ -19,26 +19,41 @@ interface SearchResult {
 
 // ── 内容渲染 ──────────────────────────────────────────────────────────────────
 
-function renderContent(text: string): React.ReactNode[] {
-  // Each line is a semantic chunk — merge adjacent content lines into paragraphs,
-  // treat blank lines as paragraph separators.
-  const rawLines = text.split(/\n/).map(l => l.trim())
-  const nodes: React.ReactNode[] = []
+// Chinese sentence-ending punctuation — a line ending with these is complete
+const SENTENCE_END = /[。！？…」』"'）\)～～]$/
 
-  // Group consecutive non-empty lines into paragraph chunks
-  const chunks: string[] = []
-  let current: string[] = []
-  for (const line of rawLines) {
-    if (line === '') {
-      if (current.length > 0) {
-        chunks.push(current.join(''))
-        current = []
-      }
+function smartMergeLines(rawLines: string[]): string[] {
+  // Merge lines that were broken mid-sentence (book-style line wrapping).
+  // A line is "continued" if it does NOT end with sentence-ending punctuation.
+  // Blank lines always force a paragraph break.
+  const paragraphs: string[] = []
+  let buf = ''
+
+  for (const raw of rawLines) {
+    const line = raw.trim()
+    if (!line) {
+      if (buf) { paragraphs.push(buf); buf = '' }
+      continue
+    }
+    if (!buf) {
+      buf = line
+    } else if (SENTENCE_END.test(buf)) {
+      // Previous line was complete — start a new paragraph segment
+      paragraphs.push(buf)
+      buf = line
     } else {
-      current.push(line)
+      // Previous line was cut mid-sentence — glue directly (no space for Chinese)
+      buf += line
     }
   }
-  if (current.length > 0) chunks.push(current.join(''))
+  if (buf) paragraphs.push(buf)
+  return paragraphs
+}
+
+function renderContent(text: string): React.ReactNode[] {
+  const rawLines = text.split(/\n/).map(l => l.trim())
+  const chunks = smartMergeLines(rawLines)
+  const nodes: React.ReactNode[] = []
 
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i]
@@ -74,7 +89,7 @@ function renderContent(text: string): React.ReactNode[] {
     }
 
     // Short heading: ≤20 chars, no sentence-ending punctuation, no digit start
-    const isHeading = chunk.length <= 20 && !chunk.endsWith('。') && !chunk.endsWith('，') && !chunk.endsWith('、') && !/^\d/.test(chunk)
+    const isHeading = chunk.length <= 20 && !SENTENCE_END.test(chunk) && !chunk.endsWith('，') && !chunk.endsWith('、') && !/^\d/.test(chunk)
     if (isHeading) {
       nodes.push(
         <h3 key={i} className="text-[15px] font-semibold text-amber-300/90 mt-10 mb-4 leading-snug tracking-wide">
@@ -84,7 +99,7 @@ function renderContent(text: string): React.ReactNode[] {
       continue
     }
 
-    // Normal paragraph — no indent, rely on spacing for separation
+    // Normal paragraph
     nodes.push(
       <p key={i} className="text-stone-300 text-[17px] leading-[2.0] mb-6">
         {chunk}
