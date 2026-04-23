@@ -99,7 +99,7 @@ function MessageBubble({ msg }: { msg: Message }) {
           {msg.loading && !msg.content ? (
             <div className="flex items-center gap-2 text-stone-500 text-sm">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-400" />
-              <span>正在检索信件并思考…</span>
+              <span>正在检索文献并思考…</span>
             </div>
           ) : (
             <div className="prose prose-sm prose-invert max-w-none
@@ -341,9 +341,9 @@ function ChatInner() {
                 <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="h-7 w-7 text-amber-400" />
                 </div>
-                <h1 className="text-2xl font-semibold text-stone-100 mb-2">向巴菲特的信件提问</h1>
+                <h1 className="text-2xl font-semibold text-stone-100 mb-2">向价值投资大师提问</h1>
                 <p className="text-stone-500 text-sm max-w-md mx-auto">
-                  探索沃伦·巴菲特 1977 至 2024 年致伯克希尔·哈撒韦股东信中的投资智慧。
+                  探索巴菲特、芒格等价值投资大师的智慧精华，所有回答均标注原文来源。
                 </p>
               </div>
               <div className="grid sm:grid-cols-2 gap-2">
