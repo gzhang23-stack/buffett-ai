@@ -6,6 +6,7 @@ export interface PqclArticle {
   index: number
   part_zh: string
   title_zh: string
+  author?: string
   content: string
 }
 

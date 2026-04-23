@@ -13,6 +13,7 @@ interface ArticleMeta {
 
 interface ArticleFull extends ArticleMeta {
   content: string
+  author?: string
 }
 
 interface Part {
@@ -48,7 +49,21 @@ function splitIntoParagraphs(text: string, maxSentences = 4): string[] {
 }
 
 function ArticleContent({ article }: { article: ArticleFull }) {
-  const paragraphs = splitIntoParagraphs(article.content)
+  // Split on double newlines first to preserve source-level paragraph breaks
+  const rawBlocks = article.content.split('\n\n').map(b => b.trim()).filter(Boolean)
+
+  // For each block: if it's an attribution (starts with ——), render as-is;
+  // otherwise, further split by sentence count
+  const blocks: Array<{ type: 'attr' | 'text'; text: string }> = []
+  for (const block of rawBlocks) {
+    if (block.startsWith('——') || block.startsWith('—')) {
+      blocks.push({ type: 'attr', text: block })
+    } else {
+      const paras = splitIntoParagraphs(block)
+      paras.forEach(p => blocks.push({ type: 'text', text: p }))
+    }
+  }
+
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
       <div className="mb-8 md:mb-12 pb-6 md:pb-8 border-b border-stone-800/60">
@@ -58,13 +73,24 @@ function ArticleContent({ article }: { article: ArticleFull }) {
         <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug">
           {article.title_zh}
         </h1>
+        {article.author && (
+          <p className="mt-3 text-sm text-amber-400/70 font-medium">
+            {article.author}
+          </p>
+        )}
       </div>
       <div className="space-y-6">
-        {paragraphs.map((para, i) => (
-          <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
-            {para}
-          </p>
-        ))}
+        {blocks.map((block, i) =>
+          block.type === 'attr' ? (
+            <p key={i} className="text-right text-sm text-stone-500 italic">
+              {block.text}
+            </p>
+          ) : (
+            <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
+              {block.text}
+            </p>
+          )
+        )}
       </div>
     </div>
   )
