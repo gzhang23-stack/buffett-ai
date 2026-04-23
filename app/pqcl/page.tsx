@@ -111,17 +111,24 @@ function SidebarContent({
   const articlesByPart = (part_zh: string) => {
     const allArticles = articles.filter(a => a.part_zh === part_zh)
 
-    // For chapters 3 and 4, filter to show only major entries
-    if (part_zh.includes('第三章') || part_zh.includes('第四章')) {
+    // For chapter 4, only show major speeches
+    if (part_zh.includes('第四章')) {
       return allArticles.filter(a => {
         const title = a.title_zh
-        // Skip sub-items that are clearly nested content
-        if (title.match(/^[一二三四五六七八九十]+\s/)) return false // "一 奖励和惩罚"
-        if (title.match(/^十[一二三四五六七八九十]+\s/)) return false // "十一 ..."
-        if (title.match(/^二十/)) return false
-        if (title.startsWith('（') && title.endsWith('）')) return false // "(插文)"
-        if (title.startsWith('重读')) return false // "重读第一讲"
-        if (title.length < 8 && !title.includes('年')) return false // Very short titles
+        // Keep only major speech titles with dates or key topics
+        if (title.includes('年') && title.includes('月')) return true // "1986年6月13日"
+        if (title.includes('斯坦福') || title.includes('南加州')) return true
+        if (title === '人类误判心理学') return true
+        return false
+      })
+    }
+
+    // For chapter 3, filter out sub-items
+    if (part_zh.includes('第三章')) {
+      return allArticles.filter(a => {
+        const title = a.title_zh
+        if (title.startsWith('（') && title.endsWith('）')) return false
+        if (title.length < 6) return false
         return true
       })
     }
