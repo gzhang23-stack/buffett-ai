@@ -207,7 +207,7 @@ function MungerDaoInner() {
                                 : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
                             }`}
                           >
-                            <span className="truncate leading-snug">{article.title_zh}</span>
+                            <span className="leading-snug text-left">{article.title_zh}</span>
                           </button>
                         )
                       })}
