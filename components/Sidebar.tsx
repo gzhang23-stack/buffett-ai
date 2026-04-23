@@ -6,7 +6,6 @@ import { BookOpen, MessageSquare, Search, FileText, Lightbulb, Building2, Users,
 import { useState } from 'react'
 
 const NAV_ITEMS = [
-  { href: '/', label: '首页总览', icon: TrendingUp },
   { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/unscripted', label: '巴芒年会精选', icon: Mic, badge: '226' },
   { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
