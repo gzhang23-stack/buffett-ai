@@ -27,30 +27,59 @@ interface SearchResult {
 }
 
 function ArticleContent({ article }: { article: ArticleFull }) {
-  // 按段落分割，保留空行作为段落分隔符
-  const rawLines = article.content.split('\n')
-  const blocks: string[] = []
-  let currentBlock = ''
+  // 先合并被截断的行
+  const rawLines = article.content.split('\n');
+  const mergedLines: string[] = [];
+  let buffer = '';
 
   for (const line of rawLines) {
-    const trimmed = line.trim()
+    const trimmed = line.trim();
+
     if (!trimmed) {
-      // 空行，结束当前块
+      if (buffer) {
+        mergedLines.push(buffer);
+        buffer = '';
+      }
+      mergedLines.push('');
+      continue;
+    }
+
+    // 判断是否需要合并到上一行
+    if (buffer) {
+      const lastChar = buffer.slice(-1);
+      const shouldMerge = !['。', '！', '？', ')', '）', '"', '"', ':', '：', '，', '、', '；'].includes(lastChar);
+
+      if (shouldMerge) {
+        buffer += trimmed;
+        continue;
+      }
+    }
+
+    if (buffer) mergedLines.push(buffer);
+    buffer = trimmed;
+  }
+  if (buffer) mergedLines.push(buffer);
+
+  // 按段落分割，保留空行作为段落分隔符
+  const blocks: string[] = [];
+  let currentBlock = '';
+
+  for (const line of mergedLines) {
+    if (!line.trim()) {
       if (currentBlock) {
-        blocks.push(currentBlock)
-        currentBlock = ''
+        blocks.push(currentBlock);
+        currentBlock = '';
       }
     } else {
-      // 非空行，添加到当前块
-      if (currentBlock) currentBlock += '\n'
-      currentBlock += trimmed
+      if (currentBlock) currentBlock += '\n';
+      currentBlock += line;
     }
   }
-  if (currentBlock) blocks.push(currentBlock)
+  if (currentBlock) blocks.push(currentBlock);
 
   // 渲染每个块
   const renderBlock = (block: string, index: number) => {
-    const trimmed = block.trim()
+    const trimmed = block.trim();
 
     // 识别"网友："开头的问题
     if (trimmed.startsWith('网友：') || trimmed.startsWith('网友:')) {
@@ -90,43 +119,11 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       )
     }
 
-    // 多行块：按句子分段
-    const sentences = trimmed.split(/([。！？])/g)
-    let paragraph = ''
-    const paragraphs: string[] = []
-
-    for (let i = 0; i < sentences.length; i += 2) {
-      const sentence = sentences[i] + (sentences[i + 1] || '')
-      paragraph += sentence
-
-      // 每3-4句或遇到换行符就分段
-      if (paragraph.split(/[。！？]/).length > 3 || sentence.includes('\n')) {
-        if (paragraph.trim()) {
-          paragraphs.push(paragraph.trim())
-          paragraph = ''
-        }
-      }
-    }
-    if (paragraph.trim()) paragraphs.push(paragraph.trim())
-
-    // 如果只有一个段落且较短，直接返回
-    if (paragraphs.length === 1 && paragraphs[0].length < 200) {
-      return (
-        <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6">
-          {paragraphs[0]}
-        </p>
-      )
-    }
-
-    // 多个段落
+    // 普通段落 - 直接显示，不再二次分段
     return (
-      <div key={index} className="space-y-5 mb-6">
-        {paragraphs.map((para, i) => (
-          <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
-            {para}
-          </p>
-        ))}
-      </div>
+      <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6">
+        {trimmed}
+      </p>
     )
   }
 

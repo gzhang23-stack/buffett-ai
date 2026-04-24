@@ -102,7 +102,7 @@ const FEATURE_CARDS = [
     href: '/dadao',
     icon: BookOpen,
     title: '大道—段永平投资问答录',
-    desc: '39 篇段永平投资智慧精选，2006-2025',
+    desc: '35 篇段永平投资智慧精选，2006-2025',
     className: 'border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10',
     iconClass: 'text-orange-400',
   },
@@ -149,7 +149,7 @@ export default function HomePage() {
           {/* Stats */}
           <div className="flex flex-wrap gap-4 sm:gap-6 pt-2">
             {[
-              { icon: FileText, label: '文献收录', value: '462+ 篇' },
+              { icon: FileText, label: '文献收录', value: '658+ 篇' },
               { icon: Calendar, label: '时间跨度', value: '1956–2024' },
               { icon: TrendingUp, label: '核心概念', value: '20+ 个' },
             ].map(({ icon: Icon, label, value }) => (
