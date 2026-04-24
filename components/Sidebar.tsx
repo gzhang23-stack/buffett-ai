@@ -59,7 +59,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               }`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-amber-400' : 'text-stone-500 group-hover:text-stone-300'}`} />
-              <span className="flex-1 truncate font-medium">{label}</span>
+              <span className="flex-1 font-medium break-words leading-snug">{label}</span>
               {badge && (
                 <span className={`text-[11px] px-1.5 py-0.5 rounded-full shrink-0 ${
                   active ? 'bg-amber-500/20 text-amber-400' : 'bg-stone-800 text-stone-500 border border-stone-700'
