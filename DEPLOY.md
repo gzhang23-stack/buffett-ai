@@ -1,6 +1,44 @@
-# 腾讯云部署指南
+# 部署指南
 
-## 方案一：使用腾讯云 Webify（推荐）
+## 方案一：使用 Vercel + 自定义域名（推荐）
+
+### 步骤：
+
+1. **部署到 Vercel**
+   - 访问：https://vercel.com
+   - 使用 GitHub 账号登录
+   - 点击 "Add New Project"
+   - 导入仓库：`gzhang23-stack/buffett-ai`
+   - 框架会自动检测为 Next.js
+   - 点击 "Deploy" 开始部署
+
+2. **配置环境变量**（可选，用于 AI 问答功能）
+   - 在项目设置中添加环境变量：
+   ```
+   DEEPSEEK_API_KEY=your-api-key
+   ```
+   - 保存后重新部署
+
+3. **绑定自定义域名**
+   - 在 Vercel 项目设置中点击 "Domains"
+   - 添加你的域名（例如：buffett.yourdomain.com）
+   - 按照提示配置 DNS 记录：
+     - 类型：CNAME
+     - 名称：buffett（或你的子域名）
+     - 值：cname.vercel-dns.com
+
+4. **配置国内 CDN 加速**（可选，提升国内访问速度）
+   - 使用腾讯云 CDN 或阿里云 CDN
+   - 源站地址填写你的 Vercel 域名
+   - 配置 CNAME 到 CDN 提供的域名
+
+5. **自动部署**
+   - 推送代码到 GitHub 后会自动触发部署
+   - 也可以在 Vercel 控制台手动触发部署
+
+---
+
+## 方案二：使用腾讯云 Webify（已停止新建）
 
 ### 步骤：
 
