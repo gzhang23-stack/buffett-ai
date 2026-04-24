@@ -50,11 +50,11 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       // 只有句号、问号、感叹号才是真正的句子结束
       const isSentenceEnd = ['。', '！', '？'].includes(lastChar);
 
-      // 如果上一行不是句子结束，或者当前行是小写字母/中文开头（明显是延续），则合并
-      const startsWithLowerOrChinese = /^[a-z一-龥]/.test(trimmed);
-      const shouldMerge = !isSentenceEnd || startsWithLowerOrChinese;
+      // 检查当前行是否是新的编号列表项或特殊标记
+      const isNewItem = /^(\d+\.|网友[：:]|问[：:])/.test(trimmed);
 
-      if (shouldMerge) {
+      // 如果上一行不是句子结束，且当前行不是新项目，则合并
+      if (!isSentenceEnd && !isNewItem) {
         buffer += trimmed;
         continue;
       }
@@ -103,13 +103,22 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       )
     }
 
-    // 识别编号标题（如 "1. 基本版"）- 只有短文本才是标题
-    if (/^\d+\.\s+/.test(trimmed) && trimmed.length <= 20) {
+    // 识别编号标题（如 "1. 基本版"）或编号列表项
+    if (/^\d+\.\s+/.test(trimmed)) {
+      // 短文本（<=20字符）渲染为标题样式
+      if (trimmed.length <= 20) {
+        return (
+          <h3 key={index} className="text-lg md:text-xl font-bold text-amber-400 mt-10 mb-5 flex items-center gap-2">
+            <span className="w-1 h-6 bg-amber-500 rounded"></span>
+            {trimmed}
+          </h3>
+        )
+      }
+      // 长文本渲染为带编号的段落
       return (
-        <h3 key={index} className="text-lg md:text-xl font-bold text-amber-400 mt-10 mb-5 flex items-center gap-2">
-          <span className="w-1 h-6 bg-amber-500 rounded"></span>
-          {trimmed}
-        </h3>
+        <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6">
+          <span className="text-amber-400 font-semibold">{trimmed}</span>
+        </p>
       )
     }
 
