@@ -103,8 +103,8 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       )
     }
 
-    // 识别编号列表（如 "1. 基本版"）
-    if (/^\d+\.\s+/.test(trimmed)) {
+    // 识别编号标题（如 "1. 基本版"）- 只有短文本才是标题
+    if (/^\d+\.\s+/.test(trimmed) && trimmed.length <= 20) {
       return (
         <h3 key={index} className="text-lg md:text-xl font-bold text-amber-400 mt-10 mb-5 flex items-center gap-2">
           <span className="w-1 h-6 bg-amber-500 rounded"></span>
