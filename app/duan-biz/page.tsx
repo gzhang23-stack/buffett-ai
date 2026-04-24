@@ -7,7 +7,7 @@ import { BookOpen, Search, X, Loader2, AlertTriangle, ChevronDown, ChevronRight 
 interface ArticleMeta {
   slug: string
   index: number
-  chapter: string
+  part_zh: string
   title_zh: string
 }
 
@@ -15,8 +15,8 @@ interface ArticleFull extends ArticleMeta {
   content: string
 }
 
-interface Chapter {
-  chapter: string
+interface Part {
+  part_zh: string
   count: number
 }
 
@@ -54,7 +54,7 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
       <div className="mb-8 md:mb-12 pb-6 md:pb-8 border-b border-stone-800/60">
         <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-4 tracking-widest uppercase">
-          {article.chapter}
+          {article.part_zh}
         </span>
         <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug">
           {article.title_zh}
@@ -73,24 +73,24 @@ function ArticleContent({ article }: { article: ArticleFull }) {
 
 function SidebarContent({
   sidebarLoading,
-  chapters,
+  parts,
   articles,
-  expandedChapters,
-  toggleChapter,
+  expandedParts,
+  togglePart,
   selectedSlug,
   loadArticle,
   onClose,
 }: {
   sidebarLoading: boolean
-  chapters: Chapter[]
+  parts: Part[]
   articles: ArticleMeta[]
-  expandedChapters: Set<string>
-  toggleChapter: (chapter: string) => void
+  expandedParts: Set<string>
+  togglePart: (part_zh: string) => void
   selectedSlug: string | null
   loadArticle: (slug: string) => void
   onClose?: () => void
 }) {
-  const articlesByChapter = (chapter: string) => articles.filter(a => a.chapter === chapter)
+  const articlesByPart = (part_zh: string) => articles.filter(a => a.part_zh === part_zh)
 
   return (
     <div className="flex-1 overflow-y-auto py-1">
@@ -99,25 +99,25 @@ function SidebarContent({
           <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
         </div>
       ) : (
-        chapters.map(chapter => {
-          const isExpanded = expandedChapters.has(chapter.chapter)
-          const chapterArticles = articlesByChapter(chapter.chapter)
+        parts.map(part => {
+          const isExpanded = expandedParts.has(part.part_zh)
+          const partArticles = articlesByPart(part.part_zh)
           return (
-            <div key={chapter.chapter}>
+            <div key={part.part_zh}>
               <button
-                onClick={() => toggleChapter(chapter.chapter)}
+                onClick={() => togglePart(part.part_zh)}
                 className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
               >
                 {isExpanded
                   ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
                   : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
                 }
-                <span className="flex-1 leading-snug">{chapter.chapter}</span>
-                <span className="text-xs text-stone-600 shrink-0">{chapter.count}</span>
+                <span className="flex-1 leading-snug">{part.part_zh}</span>
+                <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
               </button>
               {isExpanded && (
                 <div className="bg-stone-900/20">
-                  {chapterArticles.map(article => {
+                  {partArticles.map(article => {
                     const isSelected = selectedSlug === article.slug
                     return (
                       <button
@@ -148,9 +148,9 @@ function DuanBizInner() {
   const searchParams = useSearchParams()
   const initialQ = searchParams.get('q') ?? ''
 
-  const [chapters, setChapters] = useState<Chapter[]>([])
+  const [parts, setParts] = useState<Part[]>([])
   const [articles, setArticles] = useState<ArticleMeta[]>([])
-  const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set())
+  const [expandedParts, setExpandedParts] = useState<Set<string>>(new Set())
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [articleDetail, setArticleDetail] = useState<ArticleFull | null>(null)
   const [loading, setLoading] = useState(false)
@@ -163,10 +163,10 @@ function DuanBizInner() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/duan-biz?chapters=1').then(r => r.json()),
+      fetch('/api/duan-biz?parts=1').then(r => r.json()),
       fetch('/api/duan-biz?articles=1').then(r => r.json()),
-    ]).then(([chaptersData, articlesData]) => {
-      if (Array.isArray(chaptersData.chapters)) setChapters(chaptersData.chapters)
+    ]).then(([partsData, articlesData]) => {
+      if (Array.isArray(partsData.parts)) setParts(partsData.parts)
       if (Array.isArray(articlesData.articles)) setArticles(articlesData.articles)
     }).catch(() => {}).finally(() => setSidebarLoading(false))
   }, [])
@@ -175,11 +175,11 @@ function DuanBizInner() {
     if (initialQ) handleSearch(initialQ)
   }, [initialQ]) // eslint-disable-line
 
-  const toggleChapter = (chapter: string) => {
-    setExpandedChapters(prev => {
+  const togglePart = (part_zh: string) => {
+    setExpandedParts(prev => {
       const next = new Set(prev)
-      if (next.has(chapter)) next.delete(chapter)
-      else next.add(chapter)
+      if (next.has(part_zh)) next.delete(part_zh)
+      else next.add(part_zh)
       return next
     })
   }
@@ -246,10 +246,10 @@ function DuanBizInner() {
         </div>
         <SidebarContent
           sidebarLoading={sidebarLoading}
-          chapters={chapters}
+          parts={parts}
           articles={articles}
-          expandedChapters={expandedChapters}
-          toggleChapter={toggleChapter}
+          expandedParts={expandedParts}
+          togglePart={togglePart}
           selectedSlug={selectedSlug}
           loadArticle={loadArticle}
           onClose={() => setMobileSidebarOpen(false)}
@@ -267,10 +267,10 @@ function DuanBizInner() {
         </div>
         <SidebarContent
           sidebarLoading={sidebarLoading}
-          chapters={chapters}
+          parts={parts}
           articles={articles}
-          expandedChapters={expandedChapters}
-          toggleChapter={toggleChapter}
+          expandedParts={expandedParts}
+          togglePart={togglePart}
           selectedSlug={selectedSlug}
           loadArticle={loadArticle}
         />
@@ -336,7 +336,7 @@ function DuanBizInner() {
                 <div key={i} className="rounded-xl border border-stone-700/50 bg-stone-900/60 overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-stone-700/40">
                     <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 shrink-0">
-                      {hit.article.chapter}
+                      {hit.article.part_zh}
                     </span>
                     <span className="text-sm text-stone-300 truncate">{hit.article.title_zh}</span>
                   </div>
@@ -377,7 +377,7 @@ function DuanBizInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">段永平商业逻辑问答，共 922 篇</p>
+              <p className="text-stone-600 text-sm">段永平商业逻辑问答，共 40 篇</p>
             </div>
           )}
         </div>

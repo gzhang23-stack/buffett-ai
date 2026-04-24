@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAllDuanInvestArticles, getDuanInvestBySlug, searchDuanInvest, getDuanInvestChapters } from '@/lib/duan_invest'
+import { getAllDuanInvestArticles, getDuanInvestBySlug, searchDuanInvest, getDuanInvestParts } from '@/lib/duan_invest'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
 
-  if (searchParams.has('chapters')) {
-    return NextResponse.json({ chapters: getDuanInvestChapters() })
+  if (searchParams.has('parts')) {
+    return NextResponse.json({ parts: getDuanInvestParts() })
   }
 
   if (searchParams.has('slug')) {
