@@ -33,20 +33,6 @@ function NavContent({ onClose }: { onClose?: () => void }) {
 
   return (
     <>
-      {/* Search */}
-      <form onSubmit={handleSearch} className="px-3 pt-4">
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
-          <Search className="h-4 w-4 text-stone-500 shrink-0" />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="搜索信件内容…"
-            className="flex-1 bg-transparent text-sm text-stone-300 placeholder:text-stone-600 outline-none min-w-0"
-          />
-        </div>
-      </form>
-
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon, badge }) => {

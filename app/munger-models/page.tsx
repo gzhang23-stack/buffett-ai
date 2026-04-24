@@ -223,7 +223,7 @@ function MungerModelInner() {
           ) : (
             <div className="mb-1">
               <div className="px-4 py-1.5 text-[10px] font-semibold text-stone-600 uppercase tracking-wider border-b border-stone-800/60 bg-stone-900/30">
-                共 {models.length} 篇文章
+                共 {models.length} 个模型
               </div>
               {models.map((model) => {
                 const isSelected = selectedSlug === model.slug
@@ -265,7 +265,7 @@ function MungerModelInner() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="搜索文章内容…"
+                placeholder="搜索思维模型…"
                 className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 outline-none"
               />
               {searchQuery && (
@@ -299,13 +299,13 @@ function MungerModelInner() {
           {!searching && searchResults.length > 0 && (
             <div className="px-4 py-6 w-full space-y-4">
               <p className="text-xs text-stone-500 mb-4">
-                找到 <span className="text-amber-400 font-medium">{searchResults.length}</span> 条相关文章
+                找到 <span className="text-amber-400 font-medium">{searchResults.length}</span> 个相关模型
               </p>
               {searchResults.map((hit, i) => (
                 <div key={i} className="rounded-xl border border-stone-700/50 bg-stone-900/60 overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-stone-700/40">
                     <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5">
-                      第 {hit.model.index + 1} 篇
+                      模型 {hit.model.index}
                     </span>
                     <span className="text-sm text-stone-300">{hit.model.title}</span>
                     <span className="ml-auto text-xs text-stone-600 tabular-nums">匹配度 {hit.score}</span>
@@ -330,7 +330,7 @@ function MungerModelInner() {
             <div className="flex flex-col items-center justify-center py-20 text-center px-6">
               <Search className="h-10 w-10 text-stone-700 mb-3" />
               <p className="text-stone-400 font-medium mb-1">未找到相关内容</p>
-              <p className="text-stone-600 text-sm">尝试其他关键词，或从左侧选择文章阅读</p>
+              <p className="text-stone-600 text-sm">尝试其他关键词，或从左侧选择思维模型阅读</p>
             </div>
           )}
 
@@ -346,7 +346,7 @@ function MungerModelInner() {
               <div className="flex items-start gap-3 p-4 rounded-xl border border-red-500/20 bg-red-500/5">
                 <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-red-300 mb-1">无法加载此文章</p>
+                  <p className="text-sm font-medium text-red-300 mb-1">无法加载此模型</p>
                   <p className="text-xs text-stone-500 leading-relaxed">{error}</p>
                 </div>
               </div>
@@ -358,7 +358,7 @@ function MungerModelInner() {
               {/* Model header */}
               <div className="mb-12 pb-8 border-b border-stone-800/60">
                 <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-6 tracking-widest uppercase">
-                  芒格思维模型 · 第 {(selectedModel?.index ?? 0) + 1} 篇
+                  芒格思维模型 · 模型 {selectedModel?.index ?? 0}
                 </span>
                 <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-4">
                   {selectedModel?.title}
@@ -377,8 +377,8 @@ function MungerModelInner() {
               <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 flex items-center justify-center mb-4">
                 <BookMarked className="h-8 w-8 text-stone-600" />
               </div>
-              <p className="text-stone-400 font-medium mb-1">从左侧选择文章阅读</p>
-              <p className="text-stone-600 text-sm">冷眼 30 年股票投资分享，共 91 篇</p>
+              <p className="text-stone-400 font-medium mb-1">从左侧选择思维模型阅读</p>
+              <p className="text-stone-600 text-sm">芒格 100 个思维模型，共 99 篇</p>
             </div>
           )}
         </div>

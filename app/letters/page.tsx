@@ -138,6 +138,9 @@ function SidebarContent({
   selectedSlug,
   loadSlug,
   onClose,
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
 }: {
   metasLoading: boolean
   partnershipMetas: LetterMeta[]
@@ -145,6 +148,9 @@ function SidebarContent({
   selectedSlug: string | null
   loadSlug: (slug: string) => void
   onClose?: () => void
+  searchQuery: string
+  setSearchQuery: (q: string) => void
+  handleSearch: (q: string) => void
 }) {
   const renderGroup = (label: string, items: LetterMeta[]) => {
     if (items.length === 0 && !metasLoading) return null
@@ -176,7 +182,22 @@ function SidebarContent({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto py-1">
+    <>
+      {/* Search */}
+      <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery) }} className="px-3 pt-4 pb-2">
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
+          <Search className="h-4 w-4 text-stone-500 shrink-0" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索信件内容…"
+            className="flex-1 bg-transparent text-sm text-stone-300 placeholder:text-stone-600 outline-none min-w-0"
+          />
+        </div>
+      </form>
+
+      <div className="flex-1 overflow-y-auto py-1">
       {metasLoading ? (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
@@ -188,6 +209,7 @@ function SidebarContent({
         </>
       )}
     </div>
+    </>
   )
 }
 
@@ -300,6 +322,9 @@ function LettersInner() {
           selectedSlug={selectedSlug}
           loadSlug={loadSlug}
           onClose={() => setMobileSidebarOpen(false)}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
         />
       </div>
 
@@ -317,6 +342,9 @@ function LettersInner() {
           berkshireMetas={berkshireMetas}
           selectedSlug={selectedSlug}
           loadSlug={loadSlug}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
         />
       </aside>
 
@@ -339,7 +367,7 @@ function LettersInner() {
               handleSearch(searchQuery)
               if (searchQuery.trim()) router.push(`/letters?q=${encodeURIComponent(searchQuery.trim())}`)
             }}
-            className="flex items-center gap-2 w-full"
+            className="flex items-center gap-2 w-full md:hidden"
           >
             <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 focus-within:border-amber-500/50 transition-all">
               <Search className="h-4 w-4 text-stone-500 shrink-0" />
