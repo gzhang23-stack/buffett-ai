@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { href: '/unscripted', label: '巴芒年会精选', icon: Mic, badge: '226' },
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
   { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '40' },
-  { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '31' },
+  { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
   { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
   { href: '/people', label: '关键人物', icon: Users, badge: '15' },
