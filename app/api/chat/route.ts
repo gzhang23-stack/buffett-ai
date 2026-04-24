@@ -2,10 +2,12 @@ import { NextRequest } from 'next/server'
 import { getAllLetters, searchLetters, buildContext } from '@/lib/letters'
 import OpenAI from 'openai'
 
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY!,
-  baseURL: 'https://api.deepseek.com',
-})
+function getDeepSeekClient() {
+  return new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY || 'dummy-key-for-build',
+    baseURL: 'https://api.deepseek.com',
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,6 +18,14 @@ export async function POST(req: NextRequest) {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
+    }
+
+    // Check if API key is configured
+    if (!process.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY === 'dummy-key-for-build') {
+      return new Response(
+        JSON.stringify({ error: 'DeepSeek API key not configured. Please set DEEPSEEK_API_KEY environment variable.' }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
     // 1. 读取信件并搜索相关段落
@@ -78,6 +88,7 @@ export async function POST(req: NextRequest) {
         )
 
         try {
+          const deepseek = getDeepSeekClient()
           const completion = await deepseek.chat.completions.create({
             model: 'deepseek-chat',
             messages,
