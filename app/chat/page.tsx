@@ -30,12 +30,12 @@ interface Conversation {
 }
 
 const EXAMPLE_QUESTIONS = [
-  '巴菲特如何看待长期投资？',
-  '巴菲特如何评估一家好公司？',
-  '巴菲特对市场波动有什么看法？',
-  '巴菲特如何看待管理层的质量？',
-  '巴菲特如何描述伯克希尔的竞争优势？',
-  '巴菲特在信中如何谈论保险业务的作用？',
+  '如何看待长期投资？',
+  '如何评估一家好公司？',
+  '对市场波动有什么看法？',
+  '如何看待管理层的质量？',
+  '什么是护城河？',
+  '如何理解内在价值？',
 ]
 
 function uid() {
@@ -446,7 +446,7 @@ function ChatInner() {
                     handleSubmit()
                   }
                 }}
-                placeholder="向巴菲特的致股东信提问…"
+                placeholder="向价值投资大师提问…"
                 rows={1}
                 className="flex-1 bg-transparent resize-none outline-none text-sm text-stone-200
                            placeholder:text-stone-600 leading-relaxed max-h-40"

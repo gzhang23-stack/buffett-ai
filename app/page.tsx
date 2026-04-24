@@ -4,7 +4,6 @@ import {
   MessageSquare,
   FileText,
   Lightbulb,
-  Building2,
   Users,
   ArrowRight,
   TrendingUp,
@@ -227,33 +226,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Company Cards ── */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-widest">关联公司</h2>
-            <Link href="/companies" className="text-xs text-stone-600 hover:text-amber-400 flex items-center gap-1 transition-colors">
-              查看全部 <ArrowRight className="h-3 w-3" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-            {COMPANIES.map((co) => (
-              <Link
-                key={co.name}
-                href="/companies"
-                className="flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-stone-700/50 bg-stone-900/50 hover:bg-stone-800/60 hover:border-stone-600 transition-all group"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 border border-stone-700 flex items-center justify-center shrink-0">
-                  <Building2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-stone-500 group-hover:text-amber-400 transition-colors" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium text-stone-200 truncate">{co.name}</div>
-                  <div className="text-xs text-stone-600 truncate">{co.desc}</div>
-                </div>
-                <span className="shrink-0 text-[10px] text-stone-700 ml-auto hidden sm:inline">{co.since}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
 
         {/* ── People Cards ── */}
         <section className="pb-6 sm:pb-8 md:pb-10">
