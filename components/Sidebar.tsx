@@ -6,8 +6,8 @@ import { BookOpen, MessageSquare, Search, FileText, Lightbulb, Building2, Users,
 import { useState } from 'react'
 
 const NAV_ITEMS = [
-  { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/unscripted', label: '巴芒年会精选', icon: Mic, badge: '226' },
+  { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
   { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '40' },
   { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
