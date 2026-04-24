@@ -78,42 +78,50 @@ const FEATURE_CARDS = [
   {
     href: '/letters',
     icon: FileText,
-    title: '信件浏览',
-    desc: '按年份阅读 1956–2024 年全部信件中文版',
+    title: '伯克希尔股东信',
+    desc: '1956–2024 年巴菲特致股东信完整收录',
     className: 'border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10',
     iconClass: 'text-blue-400',
   },
   {
-    href: '/chat',
+    href: '/unscripted',
     icon: MessageSquare,
-    title: 'AI 对话',
-    desc: '向 AI 提问，基于原文即时检索并生成回答',
-    className: 'border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10',
-    iconClass: 'text-amber-400',
-  },
-  {
-    href: '/concepts',
-    icon: Lightbulb,
-    title: '概念速查',
-    desc: '20 个核心投资概念，提炼自数十年的智慧',
-    className: 'border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10',
-    iconClass: 'text-purple-400',
-  },
-  {
-    href: '/companies',
-    icon: Building2,
-    title: '公司研究',
-    desc: '伯克希尔旗下及投资的 12 家关联公司',
+    title: '巴芒年会精选',
+    desc: '226 篇股东大会问答精华，原汁原味',
     className: 'border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10',
     iconClass: 'text-emerald-400',
   },
   {
-    href: '/people',
-    icon: Users,
-    title: '人物洞察',
-    desc: '巴菲特及影响他的关键人物',
+    href: '/munger-dao',
+    icon: Lightbulb,
+    title: '芒格之道',
+    desc: '25 篇芒格演讲与访谈，多元思维模型',
+    className: 'border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10',
+    iconClass: 'text-purple-400',
+  },
+  {
+    href: '/dyp',
+    icon: BookOpen,
+    title: '段永平投资问答录',
+    desc: '27 篇投资逻辑问答，本分投资实践',
+    className: 'border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10',
+    iconClass: 'text-amber-400',
+  },
+  {
+    href: '/chat',
+    icon: MessageSquare,
+    title: 'AI 智能问答',
+    desc: '基于原文检索，即时生成专业解答',
     className: 'border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10',
     iconClass: 'text-rose-400',
+  },
+  {
+    href: '/concepts',
+    icon: Lightbulb,
+    title: '核心概念',
+    desc: '20+ 个价值投资关键概念速查',
+    className: 'border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500/10',
+    iconClass: 'text-cyan-400',
   },
 ]
 
@@ -131,19 +139,19 @@ export default function HomePage() {
             价值投资知识库
           </div>
           <h1 className="text-4xl font-bold text-stone-100 leading-tight">
-            探索<span className="text-amber-400">价值投资</span>大师们的<br />投资智慧
+            汇聚<span className="text-amber-400">价值投资</span>大师智慧<br />探索长期投资之道
           </h1>
           <p className="text-stone-400 text-lg max-w-2xl leading-relaxed">
-            收录巴菲特、芒格、格雷厄姆等价值投资大师的经典著作与智慧精华。
-            通过 AI 问答、原文浏览、概念速查，深入理解价值投资的核心理念。
+            收录巴菲特股东信、芒格演讲、段永平问答等价值投资经典文献。
+            通过 AI 智能问答、原文检索、概念速查，系统学习价值投资理念与实践。
           </p>
 
           {/* Stats */}
           <div className="flex flex-wrap gap-6 pt-2">
             {[
-              { icon: FileText, label: '年份覆盖', value: '1956–2024' },
-              { icon: Calendar, label: '信件数量', value: '约 68 封' },
-              { icon: TrendingUp, label: '年化收益', value: '19.8%' },
+              { icon: FileText, label: '文献收录', value: '346+ 篇' },
+              { icon: Calendar, label: '时间跨度', value: '1956–2024' },
+              { icon: TrendingUp, label: '核心概念', value: '20+ 个' },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-stone-800 border border-stone-700 flex items-center justify-center">
@@ -188,9 +196,9 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="flex-1 space-y-2">
               <div className="text-xs text-amber-500 font-medium uppercase tracking-wider">AI 智能问答</div>
-              <h3 className="text-xl font-semibold text-stone-100">向价值投资大师提问</h3>
+              <h3 className="text-xl font-semibold text-stone-100">与价值投资大师对话</h3>
               <p className="text-sm text-stone-400 leading-relaxed max-w-lg">
-                AI 助手基于原始文献即时检索相关段落，用大师自己的话回答你的问题。
+                基于巴菲特、芒格、段永平等大师的原始文献，AI 助手即时检索相关段落并生成专业解答。
                 支持多轮对话，所有回答均标注文献来源。
               </p>
             </div>
