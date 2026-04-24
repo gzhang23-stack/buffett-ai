@@ -1,0 +1,21 @@
+# 腾讯云 Webify 部署配置
+name: buffett-ai
+deployType: framework
+
+framework:
+  name: nextjs
+  version: auto
+
+build:
+  command: npm run build
+  outputDir: .next
+
+install:
+  command: npm install
+
+run:
+  command: npm run start
+  port: 3000
+
+env:
+  NODE_ENV: production
