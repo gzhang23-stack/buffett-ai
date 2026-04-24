@@ -377,7 +377,7 @@ function LiLuInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">李录文集，共 31 篇</p>
+              <p className="text-stone-600 text-sm">李录文集，共 28 篇</p>
             </div>
           )}
         </div>
