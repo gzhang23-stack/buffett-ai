@@ -238,7 +238,7 @@ function LiLuInner() {
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-stone-800 shrink-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
             <BookOpen className="h-4 w-4 text-amber-400" />
-            李录文集
+            李录
           </div>
           <button onClick={() => setMobileSidebarOpen(false)} className="p-1 text-stone-500 hover:text-stone-300">
             <X className="h-4 w-4" />
@@ -261,7 +261,7 @@ function LiLuInner() {
         <div className="px-4 py-3.5 border-b border-stone-800 shrink-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
             <BookOpen className="h-4 w-4 text-amber-400" />
-            李录文集
+            李录
           </div>
           <p className="text-xs text-stone-600 mt-1">文明、现代化、价值投资与中国</p>
         </div>
@@ -303,7 +303,7 @@ function LiLuInner() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="搜索李录文集内容…"
+                placeholder="搜索李录文章内容…"
                 className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 outline-none"
               />
               {searchQuery && (
@@ -377,7 +377,7 @@ function LiLuInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">李录文集，共 31 篇</p>
+              <p className="text-stone-600 text-sm">文明、现代化、价值投资与中国，共 31 篇</p>
             </div>
           )}
         </div>
