@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
   { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '40' },
   { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
+  { href: '/lenyan', label: '冷眼分享集', icon: BookMarked, badge: '77' },
   { href: '/li-lu', label: '李录文集', icon: BookOpen, badge: '31' },
   { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
