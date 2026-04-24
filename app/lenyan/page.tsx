@@ -357,9 +357,6 @@ function LenyanInner() {
             <div className="px-8 py-12 w-full max-w-2xl mx-auto">
               {/* Article header */}
               <div className="mb-12 pb-8 border-b border-stone-800/60">
-                <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-6 tracking-widest uppercase">
-                  冷眼分享集 · 第 {(selectedArticle?.index ?? 0) + 1} 篇
-                </span>
                 <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-4">
                   {selectedArticle?.title}
                 </h1>
