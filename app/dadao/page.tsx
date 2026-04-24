@@ -27,23 +27,41 @@ interface SearchResult {
 }
 
 function ArticleContent({ article }: { article: ArticleFull }) {
-  // 按段落分割（双换行或单换行）
-  const lines = article.content.split('\n').filter(line => line.trim())
+  // 按段落分割，保留空行作为段落分隔符
+  const rawLines = article.content.split('\n')
+  const blocks: string[] = []
+  let currentBlock = ''
 
-  // 识别问答格式
-  const renderLine = (line: string, index: number) => {
+  for (const line of rawLines) {
     const trimmed = line.trim()
+    if (!trimmed) {
+      // 空行，结束当前块
+      if (currentBlock) {
+        blocks.push(currentBlock)
+        currentBlock = ''
+      }
+    } else {
+      // 非空行，添加到当前块
+      if (currentBlock) currentBlock += '\n'
+      currentBlock += trimmed
+    }
+  }
+  if (currentBlock) blocks.push(currentBlock)
+
+  // 渲染每个块
+  const renderBlock = (block: string, index: number) => {
+    const trimmed = block.trim()
 
     // 识别"网友："开头的问题
     if (trimmed.startsWith('网友：') || trimmed.startsWith('网友:')) {
       const question = trimmed.replace(/^网友[：:]\s*/, '')
       return (
-        <div key={index} className="my-6 pl-4 border-l-2 border-stone-700">
-          <div className="flex items-start gap-2 mb-2">
-            <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded bg-stone-700/30 text-stone-400 border border-stone-600/40">
+        <div key={index} className="my-8 pl-5 border-l-3 border-blue-500/40 bg-blue-500/5 py-4 rounded-r-lg">
+          <div className="flex items-start gap-3">
+            <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">
               问
             </span>
-            <p className="text-stone-400 text-sm md:text-[15px] leading-relaxed italic flex-1">
+            <p className="text-stone-300 text-base md:text-[16px] leading-relaxed flex-1">
               {question}
             </p>
           </div>
@@ -54,7 +72,8 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     // 识别编号列表（如 "1. 基本版"）
     if (/^\d+\.\s+/.test(trimmed)) {
       return (
-        <h3 key={index} className="text-base md:text-lg font-semibold text-amber-400/90 mt-8 mb-4">
+        <h3 key={index} className="text-lg md:text-xl font-bold text-amber-400 mt-10 mb-5 flex items-center gap-2">
+          <span className="w-1 h-6 bg-amber-500 rounded"></span>
           {trimmed}
         </h3>
       )
@@ -63,19 +82,51 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     // 识别日期标注（如 "(2012-04-05)"）
     if (/^\(\d{4}-\d{2}-\d{2}\)$/.test(trimmed)) {
       return (
-        <div key={index} className="text-right mt-2 mb-6">
-          <span className="text-xs text-stone-600 bg-stone-800/50 px-2 py-1 rounded">
+        <div key={index} className="text-right my-4">
+          <span className="text-xs text-stone-500 bg-stone-800/60 px-3 py-1.5 rounded-full border border-stone-700">
             {trimmed}
           </span>
         </div>
       )
     }
 
-    // 普通段落
+    // 多行块：按句子分段
+    const sentences = trimmed.split(/([。！？])/g)
+    let paragraph = ''
+    const paragraphs: string[] = []
+
+    for (let i = 0; i < sentences.length; i += 2) {
+      const sentence = sentences[i] + (sentences[i + 1] || '')
+      paragraph += sentence
+
+      // 每3-4句或遇到换行符就分段
+      if (paragraph.split(/[。！？]/).length > 3 || sentence.includes('\n')) {
+        if (paragraph.trim()) {
+          paragraphs.push(paragraph.trim())
+          paragraph = ''
+        }
+      }
+    }
+    if (paragraph.trim()) paragraphs.push(paragraph.trim())
+
+    // 如果只有一个段落且较短，直接返回
+    if (paragraphs.length === 1 && paragraphs[0].length < 200) {
+      return (
+        <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6">
+          {paragraphs[0]}
+        </p>
+      )
+    }
+
+    // 多个段落
     return (
-      <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-5">
-        {trimmed}
-      </p>
+      <div key={index} className="space-y-5 mb-6">
+        {paragraphs.map((para, i) => (
+          <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
+            {para}
+          </p>
+        ))}
+      </div>
     )
   }
 
@@ -89,8 +140,8 @@ function ArticleContent({ article }: { article: ArticleFull }) {
           {article.section}
         </h1>
       </div>
-      <div className="space-y-1">
-        {lines.map((line, i) => renderLine(line, i))}
+      <div>
+        {blocks.map((block, i) => renderBlock(block, i))}
       </div>
     </div>
   )
