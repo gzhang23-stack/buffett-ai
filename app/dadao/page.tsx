@@ -26,29 +26,58 @@ interface SearchResult {
   score: number
 }
 
-function splitIntoParagraphs(text: string, maxSentences = 4): string[] {
-  if (text.length <= 200) return [text]
-  const paragraphs: string[] = []
-  let buf = ''
-  let sentCount = 0
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i]
-    buf += ch
-    if ('。！？'.includes(ch)) {
-      sentCount++
-      if (sentCount >= maxSentences) {
-        paragraphs.push(buf.trim())
-        buf = ''
-        sentCount = 0
-      }
-    }
-  }
-  if (buf.trim()) paragraphs.push(buf.trim())
-  return paragraphs.filter(Boolean)
-}
-
 function ArticleContent({ article }: { article: ArticleFull }) {
-  const paragraphs = splitIntoParagraphs(article.content)
+  // 按段落分割（双换行或单换行）
+  const lines = article.content.split('\n').filter(line => line.trim())
+
+  // 识别问答格式
+  const renderLine = (line: string, index: number) => {
+    const trimmed = line.trim()
+
+    // 识别"网友："开头的问题
+    if (trimmed.startsWith('网友：') || trimmed.startsWith('网友:')) {
+      const question = trimmed.replace(/^网友[：:]\s*/, '')
+      return (
+        <div key={index} className="my-6 pl-4 border-l-2 border-stone-700">
+          <div className="flex items-start gap-2 mb-2">
+            <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded bg-stone-700/30 text-stone-400 border border-stone-600/40">
+              问
+            </span>
+            <p className="text-stone-400 text-sm md:text-[15px] leading-relaxed italic flex-1">
+              {question}
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    // 识别编号列表（如 "1. 基本版"）
+    if (/^\d+\.\s+/.test(trimmed)) {
+      return (
+        <h3 key={index} className="text-base md:text-lg font-semibold text-amber-400/90 mt-8 mb-4">
+          {trimmed}
+        </h3>
+      )
+    }
+
+    // 识别日期标注（如 "(2012-04-05)"）
+    if (/^\(\d{4}-\d{2}-\d{2}\)$/.test(trimmed)) {
+      return (
+        <div key={index} className="text-right mt-2 mb-6">
+          <span className="text-xs text-stone-600 bg-stone-800/50 px-2 py-1 rounded">
+            {trimmed}
+          </span>
+        </div>
+      )
+    }
+
+    // 普通段落
+    return (
+      <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-5">
+        {trimmed}
+      </p>
+    )
+  }
 
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
@@ -60,12 +89,8 @@ function ArticleContent({ article }: { article: ArticleFull }) {
           {article.section}
         </h1>
       </div>
-      <div className="space-y-6">
-        {paragraphs.map((para, i) => (
-          <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">
-            {para}
-          </p>
-        ))}
+      <div className="space-y-1">
+        {lines.map((line, i) => renderLine(line, i))}
       </div>
     </div>
   )
