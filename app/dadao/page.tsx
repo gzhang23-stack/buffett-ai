@@ -47,7 +47,12 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     // 判断是否需要合并到上一行
     if (buffer) {
       const lastChar = buffer.slice(-1);
-      const shouldMerge = !['。', '！', '？', ')', '）', '"', '"', ':', '：', '，', '、', '；'].includes(lastChar);
+      // 只有句号、问号、感叹号才是真正的句子结束
+      const isSentenceEnd = ['。', '！', '？'].includes(lastChar);
+
+      // 如果上一行不是句子结束，或者当前行是小写字母/中文开头（明显是延续），则合并
+      const startsWithLowerOrChinese = /^[a-z一-龥]/.test(trimmed);
+      const shouldMerge = !isSentenceEnd || startsWithLowerOrChinese;
 
       if (shouldMerge) {
         buffer += trimmed;
