@@ -82,7 +82,7 @@ function MessageBubble({ msg }: { msg: Message }) {
   if (msg.role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] bg-amber-500 text-stone-900 rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed font-medium">
+        <div className="max-w-[85%] sm:max-w-[80%] bg-amber-500 text-stone-900 rounded-2xl rounded-tr-sm px-3 sm:px-4 py-2 sm:py-2.5 text-sm leading-relaxed font-medium">
           {msg.content}
         </div>
       </div>
@@ -90,12 +90,12 @@ function MessageBubble({ msg }: { msg: Message }) {
   }
 
   return (
-    <div className="flex gap-3">
-      <div className="shrink-0 w-7 h-7 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mt-0.5">
-        <BookOpen className="h-3.5 w-3.5 text-amber-400" />
+    <div className="flex gap-2 sm:gap-3">
+      <div className="shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mt-0.5">
+        <BookOpen className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400" />
       </div>
-      <div className="flex-1 min-w-0 space-y-3">
-        <div className="bg-stone-900/80 border border-stone-700/60 rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
+        <div className="bg-stone-900/80 border border-stone-700/60 rounded-2xl rounded-tl-sm px-3 sm:px-4 py-2.5 sm:py-3">
           {msg.loading && !msg.content ? (
             <div className="flex items-center gap-2 text-stone-500 text-sm">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-400" />
@@ -103,9 +103,11 @@ function MessageBubble({ msg }: { msg: Message }) {
             </div>
           ) : (
             <div className="prose prose-sm prose-invert max-w-none
-              prose-p:text-stone-300 prose-headings:text-stone-100
+              prose-p:text-stone-300 prose-p:text-sm prose-p:leading-relaxed
+              prose-headings:text-stone-100
               prose-strong:text-stone-200 prose-li:text-stone-300
-              prose-code:text-amber-300 prose-code:bg-stone-800">
+              prose-code:text-amber-300 prose-code:bg-stone-800 prose-code:text-xs
+              prose-ul:my-2 prose-ol:my-2 prose-li:my-1">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
               {msg.loading && (
                 <span className="inline-block w-1 h-4 bg-amber-400 animate-pulse ml-0.5 rounded-sm" />
@@ -393,24 +395,24 @@ function ChatInner() {
         </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
           {isEmpty ? (
-            <div className="w-full">
-              <div className="text-center mb-10">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="h-7 w-7 text-amber-400" />
+            <div className="w-full max-w-3xl mx-auto">
+              <div className="text-center mb-6 sm:mb-10">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 text-amber-400" />
                 </div>
-                <h1 className="text-2xl font-semibold text-stone-100 mb-2">向价值投资大师提问</h1>
-                <p className="text-stone-500 text-sm max-w-md mx-auto">
+                <h1 className="text-xl sm:text-2xl font-semibold text-stone-100 mb-2">向价值投资大师提问</h1>
+                <p className="text-stone-500 text-sm max-w-md mx-auto px-4">
                   探索巴菲特、芒格等价值投资大师的智慧精华，所有回答均标注原文来源。
                 </p>
               </div>
-              <div className="grid sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {EXAMPLE_QUESTIONS.map((q) => (
                   <button
                     key={q}
                     onClick={() => handleSubmit(q)}
-                    className="text-left text-sm px-4 py-3 rounded-xl border border-stone-700/60 bg-stone-900/50
+                    className="text-left text-sm px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-stone-700/60 bg-stone-900/50
                                hover:border-amber-500/40 hover:bg-amber-500/5 transition-colors text-stone-400
                                hover:text-stone-200"
                   >
@@ -420,7 +422,7 @@ function ChatInner() {
               </div>
             </div>
           ) : (
-            <div className="w-full space-y-6">
+            <div className="w-full max-w-3xl mx-auto space-y-4 sm:space-y-6">
               {activeConv.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} />
               ))}
@@ -430,9 +432,9 @@ function ChatInner() {
         </div>
 
         {/* Input */}
-        <div className="shrink-0 border-t border-stone-800 bg-[#0f0f0f] px-4 md:px-6 py-4">
-          <div className="w-full">
-            <div className="flex items-end gap-3 bg-stone-900/80 border border-stone-700 rounded-2xl px-4 py-2.5
+        <div className="shrink-0 border-t border-stone-800 bg-[#0f0f0f] px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="flex items-end gap-2 sm:gap-3 bg-stone-900/80 border border-stone-700 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5
                             focus-within:border-amber-500/50 transition-all">
               <textarea
                 ref={textareaRef}
@@ -460,7 +462,7 @@ function ChatInner() {
                   : <Send className="h-4 w-4 text-stone-900" />}
               </button>
             </div>
-            <p className="text-center text-[11px] text-stone-700 mt-2">
+            <p className="text-center text-[11px] text-stone-700 mt-2 hidden sm:block">
               按 Enter 发送 · Shift+Enter 换行
             </p>
           </div>
