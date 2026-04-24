@@ -237,7 +237,7 @@ function MungerModelInner() {
                         : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
                     }`}
                   >
-                    <span className="truncate leading-snug">{model.title}</span>
+                    <span className="leading-snug break-words">{model.title}</span>
                     {isSelected && <ChevronRight className="h-3 w-3 shrink-0 ml-1" />}
                   </button>
                 )

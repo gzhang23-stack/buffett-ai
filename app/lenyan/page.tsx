@@ -237,7 +237,7 @@ function LenyanInner() {
                         : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
                     }`}
                   >
-                    <span className="truncate leading-snug">{article.title}</span>
+                    <span className="leading-snug break-words">{article.title}</span>
                     {isSelected && <ChevronRight className="h-3 w-3 shrink-0 ml-1" />}
                   </button>
                 )

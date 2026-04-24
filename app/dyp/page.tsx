@@ -112,7 +112,7 @@ function SidebarContent({
                   ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
                   : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
                 }
-                <span className="flex-1 truncate leading-snug">{chapter.chapter}</span>
+                <span className="flex-1 leading-snug break-words">{chapter.chapter}</span>
                 <span className="text-xs text-stone-600">{chapter.count}</span>
               </button>
               {isExpanded && (
