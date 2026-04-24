@@ -4,6 +4,7 @@ import path from 'path'
 export interface DuanInvestArticle {
   slug: string
   index: number
+  chapter: string
   title_zh: string
   content: string
 }
@@ -24,6 +25,22 @@ export function getAllDuanInvestArticles(): DuanInvestArticle[] {
 
 export function getDuanInvestBySlug(slug: string): DuanInvestArticle | null {
   return loadArticles().find(a => a.slug === slug) ?? null
+}
+
+export function getDuanInvestChapters(): { chapter: string; count: number }[] {
+  const articles = loadArticles()
+  const seen = new Set<string>()
+  const chapters: { chapter: string; count: number }[] = []
+
+  for (const a of articles) {
+    if (!seen.has(a.chapter)) {
+      seen.add(a.chapter)
+      const count = articles.filter(art => art.chapter === a.chapter).length
+      chapters.push({ chapter: a.chapter, count })
+    }
+  }
+
+  return chapters
 }
 
 export function searchDuanInvest(query: string, topK = 8) {

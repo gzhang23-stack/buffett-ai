@@ -20,14 +20,6 @@ const CONCEPTS = [
   '定价权', '经济特许权',
 ]
 
-const COMPANIES = [
-  { name: '可口可乐', desc: '消费品护城河典范', since: '1988' },
-  { name: '美国运通', desc: '品牌与网络效应', since: '1964' },
-  { name: '苹果公司', desc: '最大持仓，消费生态', since: '2016' },
-  { name: 'GEICO 保险', desc: '保险浮存金核心', since: '1996' },
-  { name: "See's Candies", desc: '定价权教科书案例', since: '1972' },
-  { name: '伯灵顿北方铁路', desc: '基础设施护城河', since: '2010' },
-]
 
 const PEOPLE = [
   {

@@ -2,16 +2,22 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { BookOpen, Search, X, Loader2, AlertTriangle } from 'lucide-react'
+import { BookOpen, Search, X, Loader2, AlertTriangle, ChevronDown, ChevronRight as ChevronRightIcon } from 'lucide-react'
 
 interface ArticleMeta {
   slug: string
   index: number
+  chapter: string
   title_zh: string
 }
 
 interface ArticleFull extends ArticleMeta {
   content: string
+}
+
+interface Chapter {
+  chapter: string
+  count: number
 }
 
 interface SearchResult {
@@ -47,6 +53,9 @@ function ArticleContent({ article }: { article: ArticleFull }) {
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
       <div className="mb-8 md:mb-12 pb-6 md:pb-8 border-b border-stone-800/60">
+        <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-4 tracking-widest uppercase">
+          {article.chapter}
+        </span>
         <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug">
           {article.title_zh}
         </h1>
@@ -62,12 +71,86 @@ function ArticleContent({ article }: { article: ArticleFull }) {
   )
 }
 
+function SidebarContent({
+  sidebarLoading,
+  chapters,
+  articles,
+  expandedChapters,
+  toggleChapter,
+  selectedSlug,
+  loadArticle,
+  onClose,
+}: {
+  sidebarLoading: boolean
+  chapters: Chapter[]
+  articles: ArticleMeta[]
+  expandedChapters: Set<string>
+  toggleChapter: (chapter: string) => void
+  selectedSlug: string | null
+  loadArticle: (slug: string) => void
+  onClose?: () => void
+}) {
+  const articlesByChapter = (chapter: string) => articles.filter(a => a.chapter === chapter)
+
+  return (
+    <div className="flex-1 overflow-y-auto py-1">
+      {sidebarLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
+        </div>
+      ) : (
+        chapters.map(chapter => {
+          const isExpanded = expandedChapters.has(chapter.chapter)
+          const chapterArticles = articlesByChapter(chapter.chapter)
+          return (
+            <div key={chapter.chapter}>
+              <button
+                onClick={() => toggleChapter(chapter.chapter)}
+                className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+              >
+                {isExpanded
+                  ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
+                  : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
+                }
+                <span className="flex-1 leading-snug">{chapter.chapter}</span>
+                <span className="text-xs text-stone-600 shrink-0">{chapter.count}</span>
+              </button>
+              {isExpanded && (
+                <div className="bg-stone-900/20">
+                  {chapterArticles.map(article => {
+                    const isSelected = selectedSlug === article.slug
+                    return (
+                      <button
+                        key={article.slug}
+                        onClick={() => { loadArticle(article.slug); onClose?.() }}
+                        className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
+                          isSelected
+                            ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
+                            : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
+                        }`}
+                      >
+                        <span className="leading-snug text-left line-clamp-2">{article.title_zh}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })
+      )}
+    </div>
+  )
+}
+
 function DuanInvestInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialQ = searchParams.get('q') ?? ''
 
+  const [chapters, setChapters] = useState<Chapter[]>([])
   const [articles, setArticles] = useState<ArticleMeta[]>([])
+  const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set())
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [articleDetail, setArticleDetail] = useState<ArticleFull | null>(null)
   const [loading, setLoading] = useState(false)
@@ -77,22 +160,29 @@ function DuanInvestInner() {
   const [searching, setSearching] = useState(false)
   const [sidebarLoading, setSidebarLoading] = useState(true)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
-  const articlesPerPage = 50
 
   useEffect(() => {
-    fetch('/api/duan-invest?articles=1')
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data.articles)) setArticles(data.articles)
-      })
-      .catch(() => {})
-      .finally(() => setSidebarLoading(false))
+    Promise.all([
+      fetch('/api/duan-invest?chapters=1').then(r => r.json()),
+      fetch('/api/duan-invest?articles=1').then(r => r.json()),
+    ]).then(([chaptersData, articlesData]) => {
+      if (Array.isArray(chaptersData.chapters)) setChapters(chaptersData.chapters)
+      if (Array.isArray(articlesData.articles)) setArticles(articlesData.articles)
+    }).catch(() => {}).finally(() => setSidebarLoading(false))
   }, [])
 
   useEffect(() => {
     if (initialQ) handleSearch(initialQ)
   }, [initialQ]) // eslint-disable-line
+
+  const toggleChapter = (chapter: string) => {
+    setExpandedChapters(prev => {
+      const next = new Set(prev)
+      if (next.has(chapter)) next.delete(chapter)
+      else next.add(chapter)
+      return next
+    })
+  }
 
   const handleSearch = async (q: string) => {
     const query = q.trim()
@@ -131,9 +221,6 @@ function DuanInvestInner() {
     }
   }
 
-  const totalPages = Math.ceil(articles.length / articlesPerPage)
-  const currentArticles = articles.slice(currentPage * articlesPerPage, (currentPage + 1) * articlesPerPage)
-
   return (
     <div className="flex h-full overflow-hidden">
       {/* Mobile overlay */}
@@ -151,60 +238,22 @@ function DuanInvestInner() {
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-stone-800 shrink-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-stone-300 tracking-wide">
             <BookOpen className="h-4 w-4 text-amber-400" />
-            段永平问答录
+            段永平投资逻辑
           </div>
           <button onClick={() => setMobileSidebarOpen(false)} className="p-1 text-stone-500 hover:text-stone-300">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto py-1">
-          {sidebarLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
-            </div>
-          ) : (
-            <>
-              {currentArticles.map(article => {
-                const isSelected = selectedSlug === article.slug
-                return (
-                  <button
-                    key={article.slug}
-                    onClick={() => { loadArticle(article.slug); setMobileSidebarOpen(false) }}
-                    className={`w-full text-left flex items-center gap-1 px-3 py-2 text-sm transition-colors ${
-                      isSelected
-                        ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
-                        : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
-                    }`}
-                  >
-                    <span className="text-xs text-stone-600 shrink-0 w-8">{article.index + 1}</span>
-                    <span className="leading-snug text-left line-clamp-2 flex-1">{article.title_zh}</span>
-                  </button>
-                )
-              })}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 py-3 border-t border-stone-800">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                    disabled={currentPage === 0}
-                    className="px-2 py-1 text-xs text-stone-400 hover:text-stone-200 disabled:opacity-30"
-                  >
-                    上一页
-                  </button>
-                  <span className="text-xs text-stone-500">
-                    {currentPage + 1} / {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                    disabled={currentPage === totalPages - 1}
-                    className="px-2 py-1 text-xs text-stone-400 hover:text-stone-200 disabled:opacity-30"
-                  >
-                    下一页
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <SidebarContent
+          sidebarLoading={sidebarLoading}
+          chapters={chapters}
+          articles={articles}
+          expandedChapters={expandedChapters}
+          toggleChapter={toggleChapter}
+          selectedSlug={selectedSlug}
+          loadArticle={loadArticle}
+          onClose={() => setMobileSidebarOpen(false)}
+        />
       </div>
 
       {/* Desktop sidebar */}
@@ -214,56 +263,17 @@ function DuanInvestInner() {
             <BookOpen className="h-4 w-4 text-amber-400" />
             段永平问答录
           </div>
-          <p className="text-xs text-stone-600 mt-1">投资逻辑篇</p>
+          <p className="text-xs text-stone-600 mt-1">商业逻辑篇</p>
         </div>
-        <div className="flex-1 overflow-y-auto py-1">
-          {sidebarLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
-            </div>
-          ) : (
-            <>
-              {currentArticles.map(article => {
-                const isSelected = selectedSlug === article.slug
-                return (
-                  <button
-                    key={article.slug}
-                    onClick={() => loadArticle(article.slug)}
-                    className={`w-full text-left flex items-center gap-1 px-3 py-2 text-sm transition-colors ${
-                      isSelected
-                        ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
-                        : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
-                    }`}
-                  >
-                    <span className="text-xs text-stone-600 shrink-0 w-8">{article.index + 1}</span>
-                    <span className="leading-snug text-left line-clamp-2 flex-1">{article.title_zh}</span>
-                  </button>
-                )
-              })}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 py-3 border-t border-stone-800">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                    disabled={currentPage === 0}
-                    className="px-2 py-1 text-xs text-stone-400 hover:text-stone-200 disabled:opacity-30"
-                  >
-                    上一页
-                  </button>
-                  <span className="text-xs text-stone-500">
-                    {currentPage + 1} / {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                    disabled={currentPage === totalPages - 1}
-                    className="px-2 py-1 text-xs text-stone-400 hover:text-stone-200 disabled:opacity-30"
-                  >
-                    下一页
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <SidebarContent
+          sidebarLoading={sidebarLoading}
+          chapters={chapters}
+          articles={articles}
+          expandedChapters={expandedChapters}
+          toggleChapter={toggleChapter}
+          selectedSlug={selectedSlug}
+          loadArticle={loadArticle}
+        />
       </aside>
 
       {/* Main */}
@@ -325,6 +335,9 @@ function DuanInvestInner() {
               {searchResults.map((hit, i) => (
                 <div key={i} className="rounded-xl border border-stone-700/50 bg-stone-900/60 overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-stone-700/40">
+                    <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 shrink-0">
+                      {hit.article.chapter}
+                    </span>
                     <span className="text-sm text-stone-300 truncate">{hit.article.title_zh}</span>
                   </div>
                   <div className="px-4 py-3">
@@ -364,7 +377,7 @@ function DuanInvestInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">段永平投资问答精华，共 1,247 篇</p>
+              <p className="text-stone-600 text-sm">段永平投资逻辑问答，共 1,070 篇</p>
             </div>
           )}
         </div>
