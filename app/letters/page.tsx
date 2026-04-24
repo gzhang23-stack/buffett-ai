@@ -150,7 +150,7 @@ function SidebarContent({
     if (items.length === 0 && !metasLoading) return null
     return (
       <div className="mb-1">
-        <div className="px-4 py-1.5 text-[10px] font-semibold text-stone-600 uppercase tracking-wider border-b border-stone-800/60 bg-stone-900/30">
+        <div className="px-4 py-2 text-xs font-semibold text-stone-500 uppercase tracking-wider border-b border-stone-800/60 bg-stone-900/30">
           {label}
         </div>
         {items.map((meta) => {

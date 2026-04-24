@@ -70,7 +70,7 @@ const FEATURE_CARDS = [
     href: '/letters',
     icon: FileText,
     title: '伯克希尔股东信',
-    desc: '1956–2024 年巴菲特致股东信完整收录',
+    desc: '1956–2024 年巴菲特致股东信 100 封',
     className: 'border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10',
     iconClass: 'text-blue-400',
   },
