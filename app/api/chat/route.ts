@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const results = searchLetters(question, letters, 6)
+    const results = searchLetters(question, letters, 3)
     const context = buildContext(results)
 
     // 2. 构建消息历史（多轮对话，最多保留 6 轮）
@@ -46,13 +46,14 @@ export async function POST(req: NextRequest) {
     const messages: ChatMessage[] = [
       {
         role: 'system',
-        content: `你是沃伦·巴菲特投资哲学和伯克希尔·哈撒韦年度股东信的专家助手。
+        content: `你是价值投资领域的专家助手，精通巴菲特、芒格、段永平等价值投资大师的投资哲学。
 
-请根据提供的信件原文片段回答用户的问题，**全程使用中文**。要求：
-- 具体且有据可查，引用年份时请明确说明
-- 适当直接引用原文（可翻译为中文），以增强说服力
+请根据提供的原文片段回答用户的问题，**全程使用中文**。要求：
+- 必须基于提供的原文片段回答，不要说"未包含"或"不足以回答"
+- 具体且有据可查，引用年份和来源时请明确说明
+- 适当直接引用原文关键句，以增强说服力
 - 使用 Markdown 格式（加粗关键术语，适当使用列表）
-- 如果提供的原文片段不足以完整回答，请坦诚说明，并结合巴菲特的整体投资理念作补充`,
+- 综合多位大师的观点，指出是谁的论述`,
       },
     ]
 
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
     // 当前问题 + 检索到的 context
     messages.push({
       role: 'user',
-      content: `Context from Buffett's letters:\n---\n${context}\n---\n\nQuestion: ${question.trim()}`,
+      content: `以下是从价值投资大师文献中检索到的相关段落：\n---\n${context}\n---\n\n问题：${question.trim()}`,
     })
 
     // 3. 先发 sources，让前端立即渲染
