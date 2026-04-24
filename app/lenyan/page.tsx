@@ -192,10 +192,10 @@ function LenyanInner() {
       const data = await res.json()
       if (data.error) {
         setError(data.error)
-      } else if (!data.content) {
+      } else if (!data.article || !data.article.content) {
         setError('文章无法加载')
       } else {
-        setContent(data.content)
+        setContent(data.article.content)
         setSelectedArticle(data.article)
       }
     } catch {
