@@ -67,7 +67,7 @@ async function parseDocument() {
     const nextChapter = i < chapters.length - 1 ? chapters[i + 1] : null
     const endLine = nextChapter ? nextChapter.start : Math.min(chapter.start + 300, lines.length)
 
-    let content = ''
+    let contentLines = []
     for (let lineIdx = chapter.start; lineIdx < endLine; lineIdx++) {
       if (lineIdx >= lines.length) break
       const line = lines[lineIdx]
@@ -105,7 +105,31 @@ async function parseDocument() {
         continue
       }
 
-      content += line + '\n\n'
+      contentLines.push(line)
+    }
+
+    // Smart merge: combine lines that should be together
+    let content = ''
+    for (let i = 0; i < contentLines.length; i++) {
+      const line = contentLines[i]
+      const nextLine = i < contentLines.length - 1 ? contentLines[i + 1] : null
+
+      // Check if current line ends with sentence-ending punctuation
+      const endsWithPunctuation = /[。！？…」』"'）\)～]$/.test(line)
+
+      // Check if next line starts with lowercase or continues mid-sentence
+      const nextContinues = nextLine && /^[，、；：]/.test(nextLine)
+
+      if (endsWithPunctuation && !nextContinues) {
+        // This line is complete, add paragraph break
+        content += line + '\n\n'
+      } else if (nextContinues) {
+        // Next line continues with punctuation, merge without space
+        content += line
+      } else {
+        // Merge lines that were broken mid-sentence
+        content += line
+      }
     }
 
     content = content.trim()
