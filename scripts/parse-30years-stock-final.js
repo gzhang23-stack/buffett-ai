@@ -72,14 +72,19 @@ async function parseDocument() {
       if (lineIdx >= lines.length) break
       const line = lines[lineIdx]
 
-      // Skip very short lines, page numbers, headers
+      // Skip very short lines, page numbers, headers, watermarks
       if (
         line.length < 10 ||
         line.match(/^\d+$/) ||
         line.match(/^[①②③④⑤⑥⑦⑧⑨]/) ||
         line.includes('冷眼') && line.includes('30年股票投资心得') ||
         line.includes('目录') ||
-        line.match(/^第[一二三四五六七八]辑/)
+        line.match(/^第[一二三四五六七八]辑/) ||
+        line.includes('扫描全能王') ||
+        line.includes('扫描创建') ||
+        line.match(/^由.*扫描/) ||
+        line.match(/^\d+\s*冷眼/) ||
+        line.match(/修\s*订\s*版/) && line.length < 30
       ) {
         continue
       }
