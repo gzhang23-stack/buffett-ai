@@ -92,6 +92,10 @@ function SidebarContent({
 }) {
   const articlesByPart = (part_zh: string) => articles.filter(a => a.part_zh === part_zh)
 
+  // 分组：前言和附录 vs 正文章节
+  const prefaceParts = parts.filter(p => p.part_zh === '前言' || p.part_zh === '附录')
+  const mainParts = parts.filter(p => p.part_zh !== '前言' && p.part_zh !== '附录')
+
   return (
     <div className="flex-1 overflow-y-auto py-1">
       {sidebarLoading ? (
@@ -99,45 +103,135 @@ function SidebarContent({
           <Loader2 className="h-4 w-4 text-stone-600 animate-spin" />
         </div>
       ) : (
-        parts.map(part => {
-          const isExpanded = expandedParts.has(part.part_zh)
-          const partArticles = articlesByPart(part.part_zh)
-          return (
-            <div key={part.part_zh}>
-              <button
-                onClick={() => togglePart(part.part_zh)}
-                className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
-              >
-                {isExpanded
-                  ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
-                  : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
-                }
-                <span className="flex-1 leading-snug">{part.part_zh}</span>
-                <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
-              </button>
-              {isExpanded && (
-                <div className="bg-stone-900/20">
-                  {partArticles.map(article => {
-                    const isSelected = selectedSlug === article.slug
-                    return (
-                      <button
-                        key={article.slug}
-                        onClick={() => { loadArticle(article.slug); onClose?.() }}
-                        className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
-                          isSelected
-                            ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
-                            : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
-                        }`}
-                      >
-                        <span className="leading-snug text-left line-clamp-2">{article.title_zh}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )
-        })
+        <>
+          {/* 前言部分 */}
+          {prefaceParts.filter(p => p.part_zh === '前言').map(part => {
+            const isExpanded = expandedParts.has(part.part_zh)
+            const partArticles = articlesByPart(part.part_zh)
+            return (
+              <div key={part.part_zh}>
+                <button
+                  onClick={() => togglePart(part.part_zh)}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-500 hover:text-stone-300 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+                >
+                  {isExpanded
+                    ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-stone-500" />
+                    : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
+                  }
+                  <span className="flex-1 leading-snug">{part.part_zh}</span>
+                  <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
+                </button>
+                {isExpanded && (
+                  <div className="bg-stone-900/20">
+                    {partArticles.map(article => {
+                      const isSelected = selectedSlug === article.slug
+                      return (
+                        <button
+                          key={article.slug}
+                          onClick={() => { loadArticle(article.slug); onClose?.() }}
+                          className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
+                            isSelected
+                              ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
+                              : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
+                          }`}
+                        >
+                          <span className="leading-snug text-left line-clamp-2">{article.title_zh}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          {/* 正文分隔线 */}
+          <div className="px-3 py-2 border-b border-stone-700">
+            <span className="text-xs font-semibold text-amber-500/70 tracking-wider uppercase">正文</span>
+          </div>
+
+          {/* 正文章节 */}
+          {mainParts.map(part => {
+            const isExpanded = expandedParts.has(part.part_zh)
+            const partArticles = articlesByPart(part.part_zh)
+            return (
+              <div key={part.part_zh}>
+                <button
+                  onClick={() => togglePart(part.part_zh)}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+                >
+                  {isExpanded
+                    ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-amber-500/60" />
+                    : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
+                  }
+                  <span className="flex-1 leading-snug">{part.part_zh}</span>
+                  <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
+                </button>
+                {isExpanded && (
+                  <div className="bg-stone-900/20">
+                    {partArticles.map(article => {
+                      const isSelected = selectedSlug === article.slug
+                      return (
+                        <button
+                          key={article.slug}
+                          onClick={() => { loadArticle(article.slug); onClose?.() }}
+                          className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
+                            isSelected
+                              ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
+                              : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
+                          }`}
+                        >
+                          <span className="leading-snug text-left line-clamp-2">{article.title_zh}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          {/* 附录部分 */}
+          {prefaceParts.filter(p => p.part_zh === '附录').map(part => {
+            const isExpanded = expandedParts.has(part.part_zh)
+            const partArticles = articlesByPart(part.part_zh)
+            return (
+              <div key={part.part_zh}>
+                <button
+                  onClick={() => togglePart(part.part_zh)}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-stone-500 hover:text-stone-300 hover:bg-stone-800/50 transition-colors border-b border-stone-800/40"
+                >
+                  {isExpanded
+                    ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-stone-500" />
+                    : <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-stone-600" />
+                  }
+                  <span className="flex-1 leading-snug">{part.part_zh}</span>
+                  <span className="text-xs text-stone-600 shrink-0">{part.count}</span>
+                </button>
+                {isExpanded && (
+                  <div className="bg-stone-900/20">
+                    {partArticles.map(article => {
+                      const isSelected = selectedSlug === article.slug
+                      return (
+                        <button
+                          key={article.slug}
+                          onClick={() => { loadArticle(article.slug); onClose?.() }}
+                          className={`w-full text-left flex items-center gap-1 px-5 py-2 text-sm transition-colors ${
+                            isSelected
+                              ? 'bg-amber-500/10 text-amber-400 border-r-2 border-amber-500'
+                              : 'text-stone-500 hover:text-stone-200 hover:bg-stone-800/60'
+                          }`}
+                        >
+                          <span className="leading-snug text-left line-clamp-2">{article.title_zh}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </>
       )}
     </div>
   )
