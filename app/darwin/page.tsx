@@ -99,37 +99,40 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       return null;
     }
 
-    // 识别章节标题（如 "第10章"）
+    // 识别章节标题（如 "第10章"）- 居中显示
     if (/^第\d+章$/.test(trimmed)) {
       return (
-        <h2 key={index} className="text-2xl md:text-3xl font-bold text-amber-400 mt-12 mb-8 flex items-center gap-3">
-          <span className="w-1.5 h-8 bg-amber-500 rounded"></span>
+        <h2 key={index} className="text-2xl md:text-3xl font-bold text-stone-100 mt-12 mb-6 text-center">
           {trimmed}
         </h2>
       )
     }
 
-    // 识别小标题（如 "兔子都跑哪儿去了？"、"趋利避害的熊蜂"）
-    // 条件：长度<=30，不包含逗号、句号、顿号，且不是引言的一部分
-    if (trimmed.length <= 30 &&
-        !trimmed.includes('，') &&
-        !trimmed.includes('。') &&
-        !trimmed.includes('、') &&
-        !trimmed.includes('查尔斯') &&
-        !trimmed.includes('沃伦') &&
-        !trimmed.includes('在某些情况下')) {
+    // 识别章节副标题（如 "趋利避害的熊蜂"）- 居中显示，紧跟在章节标题后
+    if (index <= 2 && trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。') && !trimmed.includes('、') && !trimmed.includes('查尔斯') && !trimmed.includes('沃伦')) {
       return (
-        <h3 key={index} className="text-lg md:text-xl font-bold text-stone-200 mt-8 mb-4">
+        <h3 key={index} className="text-xl md:text-2xl font-bold text-stone-200 mb-8 text-center">
           {trimmed}
         </h3>
       )
     }
 
-    // 识别引用块（达尔文或巴菲特的引言）
-    if (trimmed.includes('查尔斯达尔文') || trimmed.includes('沃伦·巴菲特') || trimmed.includes('《物种起源》')) {
+    // 识别引用来源（如 "—查尔斯·达尔文，《物种起源》"）
+    if (trimmed.startsWith('—') || trimmed.startsWith('——')) {
       return (
-        <div key={index} className="my-6 pl-5 border-l-3 border-amber-500/40 bg-amber-500/5 py-4 rounded-r-lg">
-          <p className="text-stone-300 text-base md:text-[16px] leading-relaxed italic">
+        <div key={index} className="text-right mb-6">
+          <p className="text-sm text-stone-500 italic">
+            {trimmed}
+          </p>
+        </div>
+      )
+    }
+
+    // 识别引用块（达尔文或巴菲特的引言）- 不包含来源的纯引言
+    if ((trimmed.includes('查尔斯') || trimmed.includes('沃伦') || trimmed.includes('《物种起源》') || trimmed.includes('致股东')) && trimmed.length < 200) {
+      return (
+        <div key={index} className="my-6 px-6 py-4 bg-stone-900/40 rounded-lg border-l-4 border-amber-500/40">
+          <p className="text-stone-300 text-base md:text-[17px] leading-relaxed italic text-center">
             {trimmed}
           </p>
         </div>
@@ -138,7 +141,7 @@ function ArticleContent({ article }: { article: ArticleFull }) {
 
     // 普通段落
     return (
-      <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6">
+      <p key={index} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0] mb-6 text-justify">
         {trimmed}
       </p>
     )
