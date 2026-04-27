@@ -110,13 +110,9 @@ function renderContent(text: string): React.ReactNode[] {
                     </div>
                   )
                 }
-                // Footnotes (a. b. c.)
+                // Skip footnotes (a. b. c.)
                 if (/^[a-z]\.\s/.test(line)) {
-                  return (
-                    <div key={idx} className="text-stone-500 text-[13px] leading-relaxed mt-3 pl-4">
-                      {line}
-                    </div>
-                  )
+                  return null
                 }
                 // Data rows with numbers/percentages
                 if (/[\d\+\-\%]/.test(line)) {
