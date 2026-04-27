@@ -79,6 +79,68 @@ function renderContent(text: string): React.ReactNode[] {
     const chunk = chunks[i]
     if (!chunk) continue
 
+    // Table detection: starts with "表" followed by number/dash
+    if (/^表\s*[\d\-]+/.test(chunk)) {
+      const tableLines: string[] = [chunk]
+      let j = i + 1
+      // Collect subsequent lines that look like table content
+      while (j < chunks.length) {
+        const nextChunk = chunks[j]
+        // Stop at next heading, empty, or paragraph text
+        if (!nextChunk ||
+            /^表\s*[\d\-]+/.test(nextChunk) ||
+            /^第\s*\d+\s*章/.test(nextChunk) ||
+            (nextChunk.length > 100 && SENTENCE_END.test(nextChunk))) {
+          break
+        }
+        tableLines.push(nextChunk)
+        j++
+      }
+
+      if (tableLines.length > 1) {
+        nodes.push(
+          <div key={i} className="my-8 overflow-x-auto">
+            <div className="inline-block min-w-full rounded-xl border border-stone-700/50 bg-stone-900/40 p-5">
+              {tableLines.map((line, idx) => {
+                // Table title
+                if (idx === 0) {
+                  return (
+                    <div key={idx} className="text-amber-300 font-semibold text-[15px] mb-4 pb-3 border-b border-stone-700/50">
+                      {line}
+                    </div>
+                  )
+                }
+                // Footnotes (a. b. c.)
+                if (/^[a-z]\.\s/.test(line)) {
+                  return (
+                    <div key={idx} className="text-stone-500 text-[13px] leading-relaxed mt-3 pl-4">
+                      {line}
+                    </div>
+                  )
+                }
+                // Data rows with numbers/percentages
+                if (/[\d\+\-\%]/.test(line)) {
+                  return (
+                    <div key={idx} className="text-stone-300 text-[14px] leading-relaxed py-1.5 font-mono">
+                      {line}
+                    </div>
+                  )
+                }
+                // Column headers or other text
+                return (
+                  <div key={idx} className="text-amber-400/80 text-[14px] font-medium py-1.5">
+                    {line}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+        i = j - 1
+        continue
+      }
+    }
+
     // Circled number lists ①②③
     if (/[①②③④⑤⑥⑦⑧⑨]/.test(chunk)) {
       const parts = chunk.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
