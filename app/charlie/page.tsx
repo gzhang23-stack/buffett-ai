@@ -377,7 +377,7 @@ function CharlieInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">穷查理宝典问答，共 24 篇</p>
+              <p className="text-stone-600 text-sm">穷查理宝典，共 23 篇</p>
             </div>
           )}
         </div>
