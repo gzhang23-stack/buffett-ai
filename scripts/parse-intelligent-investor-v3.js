@@ -74,7 +74,9 @@ async function parseDocument() {
         (line.includes('每股利润') && line.length < 50) ||
         (line.includes('股票选择') && line.length < 50) ||
         (line.includes('可转换证券') && line.length < 50) ||
-        (line.includes('安全边际') && line.length < 50)
+        (line.includes('安全边际') && line.length < 50) ||
+        // Footnote markers (lines starting with digit followed by Chinese text)
+        line.match(/^\d+[^\d]/)
       ) {
         continue
       }
