@@ -376,7 +376,7 @@ function ThirtyYearsStockInner() {
                 <BookMarked className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">从左侧选择文章阅读</p>
-              <p className="text-stone-600 text-sm">冷眼 30 年股票投资分享，共 33 篇</p>
+              <p className="text-stone-600 text-sm">冷眼 30 年股票投资分享，共 41 篇</p>
             </div>
           )}
         </div>
