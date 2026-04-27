@@ -83,7 +83,12 @@ function ArticleContent({ article }: { article: ArticleFull }) {
   const renderBlock = (block: string, index: number) => {
     const trimmed = block.trim();
 
-    // 识别章节标题（如 "第10章"）
+    // 跳过与文章标题重复的章节标题（如文章标题是"第1章"，内容开头也是"第1章"）
+    if (/^第\d+章$/.test(trimmed) && trimmed === article.title) {
+      return null;
+    }
+
+    // 识别章节标题（如 "第10章"）- 但不在开头重复显示
     if (/^第\d+章$/.test(trimmed)) {
       return (
         <h2 key={index} className="text-2xl md:text-3xl font-bold text-amber-400 mt-12 mb-8 flex items-center gap-3">
@@ -93,8 +98,8 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       )
     }
 
-    // 识别小标题（如 "兔子都跑哪儿去了？"）
-    if (trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。')) {
+    // 识别小标题（如 "兔子都跑哪儿去了？"、"趋利避害的熊蜂"）
+    if (trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。') && !trimmed.includes('、')) {
       return (
         <h3 key={index} className="text-lg md:text-xl font-bold text-stone-200 mt-8 mb-4">
           {trimmed}
