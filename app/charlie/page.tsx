@@ -80,13 +80,19 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       continue;
     }
 
-    // 如果已经找到了元数据，且当前行是长段落，说明正文开始了
-    if (foundMetadata && line.length > 60) {
+    // 如果是括号说明行（通常是元数据的一部分）
+    if (foundMetadata && line.startsWith('（') && line.endsWith('）') && line.length < 100) {
+      metadataEndIndex = i + 1;
+      continue;
+    }
+
+    // 如果已经找到了元数据，遇到任何实质性内容（包含句号、问号、感叹号的完整句子），说明正文开始了
+    if (foundMetadata && (line.includes('。') || line.includes('！') || line.includes('？'))) {
       break;
     }
 
     // 如果没找到元数据且遇到长段落，说明没有元数据区域
-    if (!foundMetadata && line.length > 60) {
+    if (!foundMetadata && line.length > 30) {
       metadataEndIndex = 0;
       break;
     }

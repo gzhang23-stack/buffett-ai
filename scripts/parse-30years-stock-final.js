@@ -72,7 +72,7 @@ async function parseDocument() {
       if (lineIdx >= lines.length) break
       const line = lines[lineIdx]
 
-      // Skip very short lines, page numbers, headers, watermarks
+      // Skip very short lines, page numbers, headers, watermarks, and image text
       if (
         line.length < 10 ||
         line.match(/^\d+$/) ||
@@ -84,7 +84,19 @@ async function parseDocument() {
         line.includes('扫描创建') ||
         line.match(/^由.*扫描/) ||
         line.match(/^\d+\s*冷眼/) ||
-        line.match(/修\s*订\s*版/) && line.length < 30
+        line.match(/修\s*订\s*版/) && line.length < 30 ||
+        // Filter out image-related text patterns
+        line.includes('FIRST DEALS') ||
+        line.includes('STOCK EXCHANGE') ||
+        line.includes('Promotion') ||
+        line.match(/^[A-Z\s]{20,}$/) || // Lines with only uppercase letters and spaces (likely image text)
+        line.match(/Aot\s+the\s+Federation/) ||
+        line.match(/Top\s+30\s+stocks/) ||
+        line.match(/All-time high/) ||
+        line.match(/Friday's close/) ||
+        line.match(/Listed since/) ||
+        line.match(/Note.*Source.*Bloomberg/) ||
+        line.match(/^\d{2}\/\d{1,2}\/\d{2}$/) // Date patterns from image captions
       ) {
         continue
       }
@@ -94,18 +106,7 @@ async function parseDocument() {
 
     content = content.trim()
 
-    // Skip articles that are mostly images or have image markers
-    const hasImageMarkers =
-      content.includes('FIRST DEALS') ||
-      content.includes('STOCK EXCHANGE') ||
-      content.includes('Aot the Federation') ||
-      content.includes('Promotion') ||
-      content.includes('Top 30 stocks') ||
-      content.includes('All-time high price') ||
-      content.includes('Friday\'s close') ||
-      content.match(/[A-Z]{3,}\s+[A-Z]{3,}\s+[A-Z]{3,}/) // Multiple consecutive uppercase words (likely image text)
-
-    if (content.length > 200 && !hasImageMarkers) {
+    if (content.length > 200) {
       results.push({
         slug: `30years-stock-${results.length + 1}`,
         index: results.length + 1,
@@ -114,8 +115,6 @@ async function parseDocument() {
       })
 
       console.log(`${results.length}. ${chapter.title} (${content.length} chars)`)
-    } else if (hasImageMarkers) {
-      console.log(`Skipped: ${chapter.title} (contains images)`)
     }
   }
 
