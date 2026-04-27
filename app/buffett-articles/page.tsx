@@ -314,7 +314,7 @@ function BuffettArticleInner() {
                       &ldquo;{hit.excerpt}&rdquo;
                     </p>
                     <button
-                      onClick={() => loadLecture(hit.article.slug)}
+                      onClick={() => loadArticle(hit.article.slug)}
                       className="mt-2 text-xs text-amber-500 hover:text-amber-300 transition-colors"
                     >
                       阅读全文 →
@@ -354,14 +354,13 @@ function BuffettArticleInner() {
 
           {!loading && !error && content && selectedSlug && (
             <div className="px-8 py-12 w-full max-w-2xl mx-auto">
-              {/* Lecture header */}
+              {/* Article header */}
               <div className="mb-12 pb-8 border-b border-stone-800/60">
                 <h1 className="text-[26px] font-bold text-stone-100 leading-snug mb-4">
-                  {selectedLecture?.title}
+                  {selectedArticle?.title}
                 </h1>
-                <p className="text-[13px] text-stone-600 tracking-wide">{selectedLecture?.date}</p>
               </div>
-              {/* Lecture body */}
+              {/* Article body */}
               <div>
                 {renderContent(content)}
               </div>
