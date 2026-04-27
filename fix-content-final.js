@@ -81,12 +81,41 @@ function fixContent(text, debug = false) {
 
   text = fixed.join('\n');
 
+  if (debug) {
+    console.log('\n=== After step 1 (merge quotes) ===');
+    const line4 = text.split('\n')[3];
+    console.log('Line 4:', line4);
+    console.log('Includes 费马:', line4.includes('费马'));
+    console.log('Char codes around 。:');
+    const idx = line4.indexOf('。');
+    if (idx >= 0) {
+      for (let i = idx; i < Math.min(idx + 5, line4.length); i++) {
+        console.log(`  ${i}: "${line4[i]}" (${line4.charCodeAt(i)})`);
+      }
+    }
+  }
+
   // 2. 合并被错误断开的句子（非引号、非标点结尾的行）
   text = text.replace(/([^。！？：\n，、；""」』])\n+([^①②③④⑤⑥⑦⑧⑨\d\-•—\n""「『一二三四五六七八九十在实巴芒查])/g, '$1$2');
 
+  if (debug) {
+    console.log('\n=== After step 2 (merge broken sentences) ===');
+    console.log('Line 4:', text.split('\n')[3]);
+    console.log('Includes 费马:', text.split('\n')[3].includes('费马'));
+  }
+
   // 3. 确保句子结束后有换行
-  text = text.replace(/([。！？])([^"\n）」』\s])/g, '$1\n$2');
-  text = text.replace(/([。！？])(["\）」』])([^"\n）」』\s])/g, '$1$2\n$3');
+  // 使用Unicode转义确保正确匹配所有引号类型
+  // “: “, “: “, ”: “, 「: 「, 」: 」, ‘: ‘, ’: ‘
+  text = text.replace(/([。！？])([^”“”\n）」』\s])/g, ‘$1\n$2’);
+
+  if (debug) {
+    console.log('\n=== After step 3a (newline after sentence) ===');
+    console.log('Line 4:', text.split('\n')[3]);
+    console.log('Includes 费马:', text.split('\n')[3].includes('费马'));
+  }
+
+  text = text.replace(/([。！？])([""\）」』])([^""\n）」』\s])/g, '$1$2\n$3');
 
   // 4. 确保段落标题前后有适当换行
   text = text.replace(/([^\n])(在价值投资中的应用[：:])/g, '$1\n\n$2');
