@@ -377,7 +377,7 @@ function DuanBizInner() {
                 <BookOpen className="h-8 w-8 text-stone-600" />
               </div>
               <p className="text-stone-400 font-medium mb-1">点击目录选择文章</p>
-              <p className="text-stone-600 text-sm">段永平商业逻辑问答，共 40 篇</p>
+              <p className="text-stone-600 text-sm">段永平商业逻辑问答，共 24 篇</p>
             </div>
           )}
         </div>

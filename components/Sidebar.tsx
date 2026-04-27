@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
   { href: '/munger-models', label: '芒格思维模型', icon: Lightbulb, badge: '99' },
   { href: '/dadao', label: '大道—段永平投资问答录', icon: BookOpen, badge: '35' },
-  { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '40' },
+  { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '24' },
   { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
   { href: '/lenyan', label: '冷眼分享集', icon: BookMarked, badge: '91' },
   { href: '/li-lu', label: '李录--文明、现代化、价值投资与中国', icon: BookOpen, badge: '31' },
