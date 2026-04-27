@@ -58,8 +58,11 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       const isChapterTitle = /^第\d+章$/.test(trimmed);
       const isSubtitle = trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。') && !trimmed.includes('、');
 
-      // 如果上一行不是句子结束，且当前行不是标题，则合并
-      if (!isSentenceEnd && !isChapterTitle && !isSubtitle) {
+      // 如果buffer只有1-2个字，强制合并（处理"顾\n沃伦"这种情况）
+      const bufferTooShort = buffer.length <= 2;
+
+      // 如果上一行不是句子结束，或buffer太短，且当前行不是标题，则合并
+      if ((!isSentenceEnd || bufferTooShort) && !isChapterTitle && !isSubtitle) {
         buffer += trimmed;
         continue;
       }
