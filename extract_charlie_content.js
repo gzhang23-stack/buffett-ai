@@ -38,8 +38,21 @@ const contentMarkers = [
     { part: "第四章·第十讲", title: "在南加州大学GOULD法学院毕业典礼上的演讲", startLine: 19762, endLine: 20620 },
     { part: "第四章·第十一讲", title: "人类误判心理学", startLine: 20620, endLine: 22855 },
 
-    // 第五章 (line 22855-end)
-    { part: "第五章", title: "文章、报道与评论", startLine: 22855, endLine: 25800 },
+    // 第五章 - 10篇文章 (line 22855-24898)
+    { part: "第五章", title: "如果说标准石油正在试图变得贪婪的话，那么它的表现可不够好", startLine: 22963, endLine: 23101 },
+    { part: "第五章", title: "巴菲特的副手……查理·芒格和伯克希尔的主席所见略同", startLine: 23101, endLine: 23301 },
+    { part: "第五章", title: "互助储蓄与贷款联盟的辞职信", startLine: 23301, endLine: 23405 },
+    { part: "第五章", title: "反托拉斯法的滥用", startLine: 23405, endLine: 23533 },
+    { part: "第五章", title: "芒格科学中心接近完工", startLine: 23533, endLine: 23835 },
+    { part: "第五章", title: "不那么沉默的合伙人", startLine: 23835, endLine: 24365 },
+    { part: "第五章", title: "乐观主义在会计中没有容身之地", startLine: 24365, endLine: 24441 },
+    { part: "第五章", title: "贝西克兰兴衰记：关于一个国家如何陷入经济崩溃的寓言", startLine: 24441, endLine: 24629 },
+    { part: "第五章", title: "\"贪无厌\"\"高财技\"\"黑心肠\"和\"脑残\"国的悲剧", startLine: 24629, endLine: 24898 },
+    { part: "第五章", title: "查理·芒格的生活与事业", startLine: 22855, endLine: 22963 },
+
+    // 附录
+    { part: "附录", title: "推荐书目", startLine: 24898, endLine: 25276 },
+    { part: "附录", title: "芒格年谱", startLine: 25276, endLine: 25800 },
 ];
 
 console.log(`Extracting ${contentMarkers.length} sections...`);
