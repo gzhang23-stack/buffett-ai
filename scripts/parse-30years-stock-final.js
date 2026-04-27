@@ -96,7 +96,11 @@ async function parseDocument() {
         line.match(/Friday's close/) ||
         line.match(/Listed since/) ||
         line.match(/Note.*Source.*Bloomberg/) ||
-        line.match(/^\d{2}\/\d{1,2}\/\d{2}$/) // Date patterns from image captions
+        line.match(/^\d{2}\/\d{1,2}\/\d{2}$/) || // Date patterns from image captions
+        // Filter out OCR garbage from images
+        line.match(/Federaionzhw|stocr|eschstge|betweea|2and4p\.m|yestarca|ofiL|estabEsh/i) ||
+        line.match(/[a-z]{3,}[A-Z][a-z]+[A-Z]/) || // Mixed case gibberish like "yestarca7Lhe"
+        line.match(/\b[a-zA-Z]{2,}\d+[a-zA-Z]{2,}\b/) // Letters mixed with numbers like "yestarca7Lhe"
       ) {
         continue
       }
