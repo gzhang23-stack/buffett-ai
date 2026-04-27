@@ -94,7 +94,18 @@ async function parseDocument() {
 
     content = content.trim()
 
-    if (content.length > 200) {
+    // Skip articles that are mostly images or have image markers
+    const hasImageMarkers =
+      content.includes('FIRST DEALS') ||
+      content.includes('STOCK EXCHANGE') ||
+      content.includes('Aot the Federation') ||
+      content.includes('Promotion') ||
+      content.includes('Top 30 stocks') ||
+      content.includes('All-time high price') ||
+      content.includes('Friday\'s close') ||
+      content.match(/[A-Z]{3,}\s+[A-Z]{3,}\s+[A-Z]{3,}/) // Multiple consecutive uppercase words (likely image text)
+
+    if (content.length > 200 && !hasImageMarkers) {
       results.push({
         slug: `30years-stock-${results.length + 1}`,
         index: results.length + 1,
@@ -103,6 +114,8 @@ async function parseDocument() {
       })
 
       console.log(`${results.length}. ${chapter.title} (${content.length} chars)`)
+    } else if (hasImageMarkers) {
+      console.log(`Skipped: ${chapter.title} (contains images)`)
     }
   }
 
