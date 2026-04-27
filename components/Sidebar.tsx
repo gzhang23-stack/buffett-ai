@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: '/buffett-lectures', label: '巴菲特大学演讲', icon: Users, badge: '11' },
   { href: '/buffett-articles', label: '巴菲特文章和访谈', icon: FileText, badge: '32' },
   { href: '/intelligent-investor', label: '聪明的投资者', icon: BookOpen, badge: '21' },
+  { href: '/30years-stock', label: '三十年股票投资心得', icon: BookMarked, badge: '41' },
   { href: '/charlie', label: '穷查理宝典', icon: BookMarked, badge: '34' },
   { href: '/munger-dao', label: '芒格之道', icon: BookMarked, badge: '25' },
   { href: '/munger-models', label: '芒格思维模型', icon: Lightbulb, badge: '99' },
