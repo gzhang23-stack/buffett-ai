@@ -6,6 +6,7 @@ import { BookOpen, MessageSquare, Search, FileText, Lightbulb, Building2, Users,
 import { useState } from 'react'
 
 const NAV_ITEMS = [
+  { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/unscripted', label: '巴芒年会精选', icon: Mic, badge: '226' },
   { href: '/letters', label: '伯克希尔股东信', icon: FileText, badge: '68' },
   { href: '/buffett-lectures', label: '巴菲特大学演讲', icon: Users, badge: '11' },
@@ -18,7 +19,6 @@ const NAV_ITEMS = [
   { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
   { href: '/lenyan', label: '冷眼分享集', icon: BookMarked, badge: '91' },
   { href: '/li-lu', label: '李录--文明、现代化、价值投资与中国', icon: BookOpen, badge: '31' },
-  { href: '/chat', label: 'AI 智能问答', icon: MessageSquare },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
   { href: '/people', label: '关键人物', icon: Users, badge: '15' },
 ]
