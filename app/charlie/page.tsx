@@ -51,9 +51,10 @@ function ArticleContent({ article }: { article: ArticleFull }) {
   // 分离元数据和正文
   const contentLines = article.content.split('\n');
   let metadataEndIndex = 0;
+  let foundMetadata = false;
 
   // 找到正文开始的位置（跳过标题、日期、作者等元数据）
-  for (let i = 0; i < Math.min(contentLines.length, 15); i++) {
+  for (let i = 0; i < Math.min(contentLines.length, 20); i++) {
     const line = contentLines[i].trim();
 
     // 如果是空行，继续
@@ -62,25 +63,38 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       continue;
     }
 
-    // 如果是日期行
-    if (line.match(/\d{4}年\d{1,2}月\d{1,2}日/) || line.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+    // 如果是日期行（明确的日期格式）
+    if (line.match(/^\d{4}年\d{1,2}月\d{1,2}\s*日\s*$/) || line.match(/^\d{4}-\d{1,2}-\d{1,2}\s*$/)) {
       metadataEndIndex = i + 1;
+      foundMetadata = true;
       continue;
     }
 
-    // 如果是短行（可能是作者、出处等）
-    if (line.length < 50 && (line.includes('·') || line.includes('，《') || line.includes('》，'))) {
+    // 如果是作者/出处行（包含特定标记且较短）
+    if (line.length < 80 && (
+      (line.includes('·') && line.includes('，《') && line.includes('》')) ||
+      (line.match(/^[^，。]{2,10}[，·][^，。]{2,30}，《[^》]+》/))
+    )) {
       metadataEndIndex = i + 1;
+      foundMetadata = true;
       continue;
     }
 
-    // 如果遇到长段落（正文开始），停止
-    if (line.length > 50) {
+    // 如果已经找到了元数据，且当前行是长段落，说明正文开始了
+    if (foundMetadata && line.length > 60) {
+      break;
+    }
+
+    // 如果没找到元数据且遇到长段落，说明没有元数据区域
+    if (!foundMetadata && line.length > 60) {
+      metadataEndIndex = 0;
       break;
     }
   }
 
-  const metadata = contentLines.slice(0, metadataEndIndex).filter(line => line.trim()).join('\n');
+  const metadata = metadataEndIndex > 0
+    ? contentLines.slice(0, metadataEndIndex).filter(line => line.trim()).join('\n')
+    : '';
   const mainContent = contentLines.slice(metadataEndIndex).join('\n').trim();
   const paragraphs = splitIntoParagraphs(mainContent);
 

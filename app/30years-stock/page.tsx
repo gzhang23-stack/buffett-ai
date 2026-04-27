@@ -8,6 +8,8 @@ interface ThirtyYearsStockArticle {
   slug: string
   title: string
   index: number
+  date?: string
+  content?: string
 }
 
 interface SearchResult {
