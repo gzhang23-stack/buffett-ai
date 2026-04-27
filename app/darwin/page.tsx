@@ -27,8 +27,12 @@ interface SearchResult {
 }
 
 function ArticleContent({ article }: { article: ArticleFull }) {
+  // 移除文件开头的元数据行（标题：xxx 和 章节：xxx）
+  let content = article.content;
+  content = content.replace(/^标题：.*\n章节：.*\n\n?/, '');
+
   // 先合并被截断的行
-  const rawLines = article.content.split('\n');
+  const rawLines = content.split('\n');
   const mergedLines: string[] = [];
   let buffer = '';
 
@@ -50,8 +54,12 @@ function ArticleContent({ article }: { article: ArticleFull }) {
       // 只有句号、问号、感叹号才是真正的句子结束
       const isSentenceEnd = ['。', '！', '？'].includes(lastChar);
 
-      // 如果上一行不是句子结束，则合并
-      if (!isSentenceEnd) {
+      // 检查当前行是否是章节标题或小标题
+      const isChapterTitle = /^第\d+章$/.test(trimmed);
+      const isSubtitle = trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。') && !trimmed.includes('、');
+
+      // 如果上一行不是句子结束，且当前行不是标题，则合并
+      if (!isSentenceEnd && !isChapterTitle && !isSubtitle) {
         buffer += trimmed;
         continue;
       }
@@ -84,11 +92,11 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     const trimmed = block.trim();
 
     // 跳过与文章标题重复的章节标题（如文章标题是"第1章"，内容开头也是"第1章"）
-    if (/^第\d+章$/.test(trimmed) && trimmed === article.title) {
+    if (index === 0 && /^第\d+章$/.test(trimmed) && trimmed === article.title) {
       return null;
     }
 
-    // 识别章节标题（如 "第10章"）- 但不在开头重复显示
+    // 识别章节标题（如 "第10章"）
     if (/^第\d+章$/.test(trimmed)) {
       return (
         <h2 key={index} className="text-2xl md:text-3xl font-bold text-amber-400 mt-12 mb-8 flex items-center gap-3">
@@ -99,7 +107,14 @@ function ArticleContent({ article }: { article: ArticleFull }) {
     }
 
     // 识别小标题（如 "兔子都跑哪儿去了？"、"趋利避害的熊蜂"）
-    if (trimmed.length <= 30 && !trimmed.includes('，') && !trimmed.includes('。') && !trimmed.includes('、')) {
+    // 条件：长度<=30，不包含逗号、句号、顿号，且不是引言的一部分
+    if (trimmed.length <= 30 &&
+        !trimmed.includes('，') &&
+        !trimmed.includes('。') &&
+        !trimmed.includes('、') &&
+        !trimmed.includes('查尔斯') &&
+        !trimmed.includes('沃伦') &&
+        !trimmed.includes('在某些情况下')) {
       return (
         <h3 key={index} className="text-lg md:text-xl font-bold text-stone-200 mt-8 mb-4">
           {trimmed}
