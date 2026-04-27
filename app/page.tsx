@@ -149,7 +149,7 @@ export default function HomePage() {
           {/* Stats */}
           <div className="flex flex-wrap gap-4 sm:gap-6 pt-2">
             {[
-              { icon: FileText, label: '文献收录', value: '722+ 篇' },
+              { icon: FileText, label: '文献收录', value: '733+ 篇' },
               { icon: Calendar, label: '时间跨度', value: '1949–2024' },
               { icon: TrendingUp, label: '核心概念', value: '20+ 个' },
             ].map(({ icon: Icon, label, value }) => (

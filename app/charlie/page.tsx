@@ -48,18 +48,64 @@ function splitIntoParagraphs(text: string, maxSentences = 4): string[] {
 }
 
 function ArticleContent({ article }: { article: ArticleFull }) {
-  const paragraphs = splitIntoParagraphs(article.content)
+  // 分离元数据和正文
+  const contentLines = article.content.split('\n');
+  let metadataEndIndex = 0;
+
+  // 找到正文开始的位置（跳过标题、日期、作者等元数据）
+  for (let i = 0; i < Math.min(contentLines.length, 15); i++) {
+    const line = contentLines[i].trim();
+
+    // 如果是空行，继续
+    if (line === '') {
+      metadataEndIndex = i + 1;
+      continue;
+    }
+
+    // 如果是日期行
+    if (line.match(/\d{4}年\d{1,2}月\d{1,2}日/) || line.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+      metadataEndIndex = i + 1;
+      continue;
+    }
+
+    // 如果是短行（可能是作者、出处等）
+    if (line.length < 50 && (line.includes('·') || line.includes('，《') || line.includes('》，'))) {
+      metadataEndIndex = i + 1;
+      continue;
+    }
+
+    // 如果遇到长段落（正文开始），停止
+    if (line.length > 50) {
+      break;
+    }
+  }
+
+  const metadata = contentLines.slice(0, metadataEndIndex).filter(line => line.trim()).join('\n');
+  const mainContent = contentLines.slice(metadataEndIndex).join('\n').trim();
+  const paragraphs = splitIntoParagraphs(mainContent);
 
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 w-full max-w-2xl mx-auto">
+      {/* 标题区域 */}
       <div className="mb-8 md:mb-12 pb-6 md:pb-8 border-b border-stone-800/60">
         <span className="inline-block text-[11px] font-semibold text-amber-500/80 bg-amber-500/8 border border-amber-500/15 rounded-full px-3 py-1 mb-4 tracking-widest uppercase">
           {article.part_zh}
         </span>
-        <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug">
+        <h1 className="text-xl md:text-[26px] font-bold text-stone-100 leading-snug mb-4">
           {article.title_zh}
         </h1>
+
+        {/* 元数据区域（日期、作者、出处等） */}
+        {metadata && (
+          <div className="text-sm text-stone-500 space-y-1 mt-4 pt-4 border-t border-stone-800/40">
+            {metadata.split('\n').map((line, i) => (
+              <p key={i} className="leading-relaxed">{line}</p>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* 正文内容 */}
       <div className="space-y-6">
         {paragraphs.map((para, i) => (
           <p key={i} className="text-stone-300 text-base md:text-[17px] leading-[1.9] md:leading-[2.0]">

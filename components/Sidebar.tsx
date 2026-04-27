@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: '/dadao', label: '大道—段永平投资问答录', icon: BookOpen, badge: '35' },
   { href: '/duan-biz', label: '段永平商业逻辑', icon: BookOpen, badge: '24' },
   { href: '/duan-invest', label: '段永平投资逻辑', icon: BookOpen, badge: '30' },
+  { href: '/darwin', label: '我从达尔文那里学到的投资知识', icon: BookOpen, badge: '11' },
   { href: '/lenyan', label: '冷眼分享集', icon: BookMarked, badge: '91' },
   { href: '/li-lu', label: '李录--文明、现代化、价值投资与中国', icon: BookOpen, badge: '31' },
   { href: '/concepts', label: '核心概念', icon: Lightbulb, badge: '20' },
